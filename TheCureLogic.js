@@ -206,25 +206,19 @@ const array1 = [
     if (result=="A"){
     scientists = scientists - 1;};
     if (result=="B"){
-        personnel = personnel - 1;
-        someonejustdied = true;
-      };
+        someonejustdied = true;};
     if (result=="C"){
         food = food - 5;};
     if (result=="D"){
         food = food - 5;};
     if (result=="E"){
-        personnel = personnel - 1;
-        someonejustdied = true;
-      };
+        someonejustdied = true;};
     if (result=="F"){
         tunnels = tunnels - 1;};
     if (result=="G"){
         scientists = scientists - 1;};
     if (result=="H"){
-        personnel = personnel - 1;
-        someonejustdied = true;
-      };
+        someonejustdied = true;};
     if (result=="I"){
         tunnels = tunnels - 1;};
     if (result=="J"){
@@ -307,13 +301,11 @@ const array1 = [
 
       // check if anyone just died
       if(someonejustdied){
-        personnel = personnel - 1;
         WhoDies();
         } else  {
           //feed the personnel at the start of every day
           if ((food < (personnel+scientists)) && (food != 0)) {
             food = 0;
-            personnel = personnel - 1;
             const wordContainer = document.querySelector('.word');
             wordContainer.innerText = "Not enough food."
             WhoDies(); 
@@ -654,7 +646,7 @@ function WhoDies(){
         const buttonP1 = document.createElement('button');
         buttonP1.innerText = "Soldier";
         buttonP1.addEventListener('click', function () {
-        SoliderAlive=false;daytime();
+        SoliderAlive=false;personnel = personnel -1;daytime();
         });
         lettersContainer.appendChild(buttonP1);
       }
@@ -664,7 +656,7 @@ function WhoDies(){
         const buttonP2 = document.createElement('button');
         buttonP2.innerText = "Botanist";
         buttonP2.addEventListener('click', function () {
-        BotanistAlive=false;daytime();
+        BotanistAlive=false;personnel = personnel -1;daytime();
         });
         lettersContainer.appendChild(buttonP2);
       }
@@ -674,7 +666,7 @@ function WhoDies(){
         const buttonP3 = document.createElement('button');
         buttonP3.innerText = "Lumbersmith";
         buttonP3.addEventListener('click', function () {
-        LumberAlive=false;daytime();
+        LumberAlive=false;personnel = personnel -1;daytime();
         });
         lettersContainer.appendChild(buttonP3);
       }
@@ -684,7 +676,7 @@ function WhoDies(){
         const buttonP4 = document.createElement('button');
         buttonP4.innerText = "Farmer";
         buttonP4.addEventListener('click', function () {
-        FarmerAlive=false;daytime();
+        FarmerAlive=false;personnel = personnel -1;daytime();
         });
         lettersContainer.appendChild(buttonP4);
       }
