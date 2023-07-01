@@ -1,6 +1,22 @@
 body {
     background-color: #f5f5f5;
   }
+
+  .row {
+    display: flex;
+  }
+  
+  .column1 {
+    width: 66%;
+    padding: 0 1px 0 0;
+    float: center;
+  }
+
+  .column2 {
+    width: 33%;
+    padding: 0 1px 0 0;
+    float: right;
+  }
   
   .container {
     display: flex;
@@ -41,6 +57,22 @@ body {
   
   .message {
     font-size: 1.5rem;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .status {
+    font-size: 1.5rem;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .crises {
+    font-size: 1.25rem;
     margin: 20px;
     display: flex;
     justify-content: center;

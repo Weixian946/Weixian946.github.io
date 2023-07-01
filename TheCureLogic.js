@@ -1,6 +1,24 @@
 // Define the list of crises to choose from
+
+const CrisesList = "Maximum Resources needed are 5 ammo, 2 timber and 1 herb";
+
+/*const CrisesList = [
+  'Index    Needs   Bonus   Penalty',
+  '\nA    2 Ammo    1 specimen    1 scientist',
+  '\nB    5 Ammo    None    1 personnel',
+  '\nC    2 Ammo    None    5 food',
+  '\nD    1 herb    None    5 food',
+  '\nE    1 Ammo    None    1 personnel',
+  '\nF    1 Timber    None    1 tunnel',
+  '\nG    2 Timber    1 specimen    1 scientist',
+  '\nH    1 Timber and 1 herb   None    1 personnel',
+  '\nI    2 Ammo    None    1 tunnel',
+  '\nJ    1 timber    None    1 tunnel',
+];*/
+
+
 const array1 = [
-    'A. Scientist Abducted \n Choice A-Expend 3 Ammo to rescue scientist and gain 1 specimen. \n Choice B-lose 1 scientist',
+    'A. Scientist Abducted \n Choice A-Expend 2 Ammo to rescue scientist. \n Choice B-lose 1 scientist',
     'B. Horde Wave: \n Choice A-Expend 5 Ammo to defeat the horde; \n Choice B-lose 1 personnel',
     'C. Grain Silo Sabotage: \n Choice A-Expend 2 Ammo to prevent sabotage; \n Choice B-lose 5 food',
     'D. Grain Silo Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 5 food',
@@ -61,6 +79,7 @@ const array1 = [
   let BotanistAlive = true;
   let LumberAlive = true;
   let FarmerAlive = true;
+  let someonejustdied = false;
  
   // shuffle the crises deck using Durstenfeld shuffle algorithm */
     function shuffleArray(array) {
@@ -90,10 +109,16 @@ const array1 = [
     herb = 1;
     n = 0; 
        
-    // Clear any previous win/lose message
+    // Clear any previous message or status
     const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = `It is Night ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
-    
+    messageContainer.innerText = "" ;
+
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = "" ;
+
+    const CrisesContainer = document.querySelector('.crises');
+    CrisesContainer.innerText = `${CrisesList}` ;
+
     // Display the first crisis
     updateCrisisDisplay(0);
   
@@ -102,52 +127,55 @@ const array1 = [
   // Update the Crisis to display
   function updateCrisisDisplay(n) {
 
-     // clear old buttons
-     const letterButtons = document.querySelectorAll('.letters button');
-     const lettersContainer = document.querySelector('.letters');
-     letterButtons.forEach(button => {
-     button.disabled = true;
-     button.remove;
-     button.removeEventListener('click',updateResourceNumbers);
-     button.removeEventListener('click',updateSurvivalNumbers);
-     lettersContainer.removeChild(button);
-     });
+    if (WinOrLose()){
+      // do nothing.
+    }else{
+      // clear old buttons
+      const letterButtons = document.querySelectorAll('.letters button');
+      const lettersContainer = document.querySelector('.letters');
+      letterButtons.forEach(button => {
+      button.disabled = true;
+      button.remove;
+      button.removeEventListener('click',updateResourceNumbers);
+      button.removeEventListener('click',updateSurvivalNumbers);
+      lettersContainer.removeChild(button);
+      });
 
-     // display status
-     const messageContainer = document.querySelector('.message');
-     messageContainer.innerText = `It is Night ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
-    
+      // display status
+      const messageContainer = document.querySelector('.message');
+      messageContainer.innerText = `It is Night ${n+1}.`
+      const statusContainer = document.querySelector('.status');
+      statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+      const wordContainer = document.querySelector('.word');
+      wordContainer.innerText = array[n];
 
-    const wordContainer = document.querySelector('.word');
-    wordContainer.innerText = array[n];
-
-    // Generate the choice buttons
-    const button = document.createElement('button');
-    button.innerText = "Choice A";
-    button.addEventListener('click', function () {
-    updateResourceNumbers(array[n]); checkWinOrLose(); Feedpeople(); 
-    });
-    lettersContainer.appendChild(button);
-
-    const button2 = document.createElement('button');
-    button2.innerText = "Choice B";
-    button2.addEventListener('click', function () {
-    updateSurvivalNumbers(array[n]); checkWinOrLose(); Feedpeople();
-    });
-    lettersContainer.appendChild(button2);
+      // Generate the choice buttons
+      if((array[n][0]=="A" && ammo < 2) ||(array[n][0]=="B" && ammo < 5) ||(array[n][0]=="C" && ammo < 2) ||(array[n][0]=="D" && herb < 1) ||(array[n][0]=="E" && ammo < 1) ||(array[n][0]=="F" && timber < 1) ||(array[n][0]=="G" && timber  < 2) ||(array[n][0]=="H" && (timber < 1 || herb < 1)) ||(array[n][0]=="I" && ammo < 2) ||(array[n][0]=="J" && timber < 1) ){
+        const messageContainer = document.querySelector('.message');
+        messageContainer.innerText += "You do not have enough resources for Choice A";
+      } else{
+        const button = document.createElement('button');
+        button.innerText = "Choice A";
+        button.addEventListener('click', function () {
+        updateResourceNumbers(array[n]); daytime(); 
+        });
+        lettersContainer.appendChild(button);
+      };
+      
+      const button2 = document.createElement('button');
+      button2.innerText = "Choice B";
+      button2.addEventListener('click', function () {
+      updateSurvivalNumbers(array[n]); daytime();
+      });
+      lettersContainer.appendChild(button2);
+    }
   }
-  
+
   // Handle a choice A
   function updateResourceNumbers(sentence) {
     let result = sentence.substring(0, 1)
     if (result=="A"){
-        if ((ammo - 3) < 0){
-          const messageContainer = document.querySelector('.message');
-          messageContainer.innerText = `Invalid Choice. You have insufficient resource. Choice B was chosen automatically instead.`;
-          updateSurvivalNumbers(sentence);
-        }
-        ammo = ammo - 3;
-        specimens = specimens + 1;};
+        ammo = ammo - 2;};
     if (result=="B"){
         ammo = ammo - 5;};
     if (result=="C"){
@@ -169,8 +197,8 @@ const array1 = [
         ammo = ammo - 2;};
     if (result=="J"){
         timber = timber - 1;};
-  }
 
+    }
 
   // Handle a choice B
   function updateSurvivalNumbers(sentence) {
@@ -178,19 +206,25 @@ const array1 = [
     if (result=="A"){
     scientists = scientists - 1;};
     if (result=="B"){
-        personnel = personnel - 1;};
+        personnel = personnel - 1;
+        someonejustdied = true;
+      };
     if (result=="C"){
         food = food - 5;};
     if (result=="D"){
         food = food - 5;};
     if (result=="E"){
-        personnel = personnel - 1;};
+        personnel = personnel - 1;
+        someonejustdied = true;
+      };
     if (result=="F"){
         tunnels = tunnels - 1;};
     if (result=="G"){
         scientists = scientists - 1;};
     if (result=="H"){
-        personnel = personnel - 1;};
+        personnel = personnel - 1;
+        someonejustdied = true;
+      };
     if (result=="I"){
         tunnels = tunnels - 1;};
     if (result=="J"){
@@ -199,7 +233,7 @@ const array1 = [
   
   
   // Check if the game has been won or lost
-  function checkWinOrLose() { 
+  function WinOrLose() { 
 
     if (ProcessedSpecimens >= target) {
         // clear old buttons
@@ -212,8 +246,13 @@ const array1 = [
         button.removeEventListener('click',updateSurvivalNumbers);
         lettersContainer.removeChild(button);
         });
+        const wordContainer = document.querySelector('.word');
+        wordContainer.innerText = "YOU WIN!";
         const messageContainer = document.querySelector('.message');
-        messageContainer.innerText = 'You win!';   
+        messageContainer.innerText = `You have ${ProcessedSpecimens} Processed Specimens!`;
+        const statusContainer = document.querySelector('.status');
+        statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+        return true
     } else if (tunnels == 0 || scientists == 0 || personnel == 0 || n == 29) {
         // clear old buttons
         const letterButtons = document.querySelectorAll('.letters button');
@@ -228,104 +267,76 @@ const array1 = [
         const wordContainer = document.querySelector('.word');
         wordContainer.innerText = "GAME OVER.";
         const messageContainer = document.querySelector('.message');
-        messageContainer.innerText = `You have 0 tunnels, 0 personnel, 0 scientists or 0 nights left.`;
+        messageContainer.innerText = `You have ${tunnels} tunnels, ${personnel} personnel, ${scientists} scientists and ${n+1} nights have passed.`;
+        const statusContainer = document.querySelector('.status');
+        statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
         const buttonEnd = document.createElement('button');
         buttonEnd.innerText = "Click to Restart";
         buttonEnd.addEventListener('click', function () {
         initializeGame();  
         });
-        lettersContainer.appendChild(buttonEnd);      
-    } 
+        lettersContainer.appendChild(buttonEnd);   
+        return true   
+    } else {
+      return false;
+    };
   }
 
-  function Feedpeople() {
-    
-    //feed the personnel at the start of every day
+  function daytime() {
 
-    food = food - personnel - scientists;
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
 
-    // clear old buttons
-    const letterButtons = document.querySelectorAll('.letters button');
-    const lettersContainer = document.querySelector('.letters');
-    letterButtons.forEach(button => {
-    button.disabled = true;
-    button.remove;
-    button.removeEventListener('click',updateResourceNumbers);
-    button.removeEventListener('click',updateSurvivalNumbers);
-    lettersContainer.removeChild(button);
-    });
-    
-    
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
-
-
-    if (food < 0) {
-      food = 0;
-      personnel = personnel - 1;
-      const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Not enough food. Which personnel is removed from the game?";
-      // Generate the choice buttons
-      if(SoliderAlive){
-        const lettersContainer = document.querySelector('.letters');
-        const buttonP1 = document.createElement('button');
-        buttonP1.innerText = "Soldier";
-        buttonP1.addEventListener('click', function () {
-        SoliderAlive=false;DisplaySolider();checkWinOrLose();
-        });
-        lettersContainer.appendChild(buttonP1);
-      }
-
-      if(BotanistAlive){
-        const lettersContainer = document.querySelector('.letters');
-        const buttonP2 = document.createElement('button');
-        buttonP2.innerText = "Botanist";
-        buttonP2.addEventListener('click', function () {
-        BotanistAlive=false;DisplaySolider();checkWinOrLose();
-        });
-        lettersContainer.appendChild(buttonP2);
-      }
-      
-      if(LumberAlive){
-        const lettersContainer = document.querySelector('.letters');
-        const buttonP3 = document.createElement('button');
-        buttonP3.innerText = "Lumbersmith";
-        buttonP3.addEventListener('click', function () {
-        LumberAlive=false;DisplaySolider();checkWinOrLose();
-        });
-        lettersContainer.appendChild(buttonP3);
-      }
-      
-      if(FarmerAlive){
-        const lettersContainer = document.querySelector('.letters');
-        const buttonP4 = document.createElement('button');
-        buttonP4.innerText = "Farmer";
-        buttonP4.addEventListener('click', function () {
-        FarmerAlive=false;DisplaySolider();checkWinOrLose();
-        });
-        lettersContainer.appendChild(buttonP4);
-      }
-
-      if(scientists > 0){
-        const lettersContainer = document.querySelector('.letters');
-        const buttonP5 = document.createElement('button');
-        buttonP5.innerText = "Scientist";
-        buttonP5.addEventListener('click', function () {
-        scientists = scientists - 1; DisplaySolider(); checkWinOrLose();
-        });
-        lettersContainer.appendChild(buttonP5);
-      }
+    if (WinOrLose()){
+      //do nothing
     } else{
-      DisplaySolider();
-    };
+      // clear old buttons
+      const letterButtons = document.querySelectorAll('.letters button');
+      const lettersContainer = document.querySelector('.letters');
+      letterButtons.forEach(button => {
+      button.disabled = true;
+      button.remove;
+      button.removeEventListener('click',updateResourceNumbers);
+      button.removeEventListener('click',updateSurvivalNumbers);
+      lettersContainer.removeChild(button);
+      });
+      // clear old messages
+      const wordContainer = document.querySelector('.word');
+      wordContainer.innerText = ""
 
+
+      // check if anyone just died
+      if(someonejustdied){
+        personnel = personnel - 1;
+        WhoDies();
+        } else  {
+          //feed the personnel at the start of every day
+          if ((food < (personnel+scientists)) && (food != 0)) {
+            food = 0;
+            personnel = personnel - 1;
+            const wordContainer = document.querySelector('.word');
+            wordContainer.innerText = "Not enough food."
+            WhoDies(); 
+          } else {
+            if(food==0){
+              //do nothing
+            }else{
+              food = food - personnel - scientists;  
+            }
+            const messageContainer = document.querySelector('.message');
+            messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
+            DisplaySolider();  
+          };
+      };    
+    }; // end of else loop for Win or Lose 
   }
 
   function DisplaySolider() {
 
     // update the message
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText += `\n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+
 
     // clear old buttons
     const lettersContainer = document.querySelector('.letters');
@@ -399,8 +410,9 @@ const array1 = [
      });
 
     // update the message
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = `It is Day ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+
 
     // show the role
     const wordContainer = document.querySelector('.word');
@@ -456,8 +468,11 @@ const array1 = [
       });
 
     // update the message
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = `It is Day ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+    //const messageContainer = document.querySelector('.message');
+    //messageContainer.innerText = `It is Day ${n+1}.` ;
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+
 
     // show the role
     const wordContainer = document.querySelector('.word');
@@ -519,8 +534,10 @@ const array1 = [
       });
 
     // update the message
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = `It is Day ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+    //const messageContainer = document.querySelector('.message');
+    //messageContainer.innerText = `It is Day ${n+1}.` ;
+    const statusContainer = document.querySelector('.status');
+    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
 
     // show the role
     const wordContainer = document.querySelector('.word');
@@ -582,8 +599,10 @@ const array1 = [
     });
 
   // update the message
-  const messageContainer = document.querySelector('.message');
-  messageContainer.innerText = `It is Day ${n+1}. \n Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+  //const messageContainer = document.querySelector('.message');
+  //messageContainer.innerText = `It is Day ${n+1}.` ;
+  const statusContainer = document.querySelector('.status');
+  statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
 
   // show the role
   const wordContainer = document.querySelector('.word');
@@ -591,33 +610,95 @@ const array1 = [
 
   if (scientists>0){
     // Generate the choice buttons
-    const buttonSc1 = document.createElement('button');
-    buttonSc1.innerText = "Process Specimens";
-    buttonSc1.addEventListener('click', function () {
-      if (specimens >= scientists){
-        ProcessedSpecimens = ProcessedSpecimens + scientists;
-        specimens = specimens - scientists;
-        const messageContainer = document.querySelector('.message');
-        messageContainer.innerText += `\n ${ProcessedSpecimens} specimens processed in total. ${target-ProcessedSpecimens} to go!` ;
-      } else{
-        ProcessedSpecimens = ProcessedSpecimens + specimens;
-        specimens = 0;
-        const messageContainer = document.querySelector('.message');
-        messageContainer.innerText += `\n ${ProcessedSpecimens} specimens processed in total. ${target-ProcessedSpecimens} to go!` ;
-      }; n=n+1; updateCrisisDisplay(n);
-      });
-      lettersContainer.appendChild(buttonSc1);
-
-      const buttonSc2 = document.createElement('button');
-      buttonSc2.innerText = "Collect Food";
-      buttonSc2.addEventListener('click', function () {
-      food = food + scientists; n=n+1; updateCrisisDisplay(n);
-      });
-      lettersContainer.appendChild(buttonSc2);
+    if (specimens<=0){
+      //do not create the processed specimens button
+    } else {
+        const buttonSc1 = document.createElement('button');
+        buttonSc1.innerText = "Process Specimens";
+        buttonSc1.addEventListener('click', function () {
+          if (specimens >= scientists){
+            ProcessedSpecimens = ProcessedSpecimens + scientists;
+            specimens = specimens - scientists;
+            const messageContainer = document.querySelector('.message');
+            messageContainer.innerText += `\n ${ProcessedSpecimens} specimens processed in total. ${target-ProcessedSpecimens} to go!` ;
+          } else{
+            ProcessedSpecimens = ProcessedSpecimens + specimens;
+            specimens = 0;
+            const messageContainer = document.querySelector('.message');
+            messageContainer.innerText += `\n ${ProcessedSpecimens} specimens processed in total. ${target-ProcessedSpecimens} to go!` ;
+          }; n=n+1; updateCrisisDisplay(n);
+          });
+          lettersContainer.appendChild(buttonSc1);
+      }
+    const buttonSc2 = document.createElement('button');
+    buttonSc2.innerText = "Collect Food";
+    buttonSc2.addEventListener('click', function () {
+    food = food + scientists; n=n+1; updateCrisisDisplay(n);
+    });
+    lettersContainer.appendChild(buttonSc2);
   } else {
-    checkWinOrLose();
+    WinOrLose();
   }
 }
+
+function WhoDies(){
+
+  //reset 'someone just died"
+  someonejustdied = false;
+
+  const wordContainer = document.querySelector('.word');
+  wordContainer.innerText += "Which personnel is removed from the game?";
+      // Generate the choice buttons
+      if(SoliderAlive){
+        const lettersContainer = document.querySelector('.letters');
+        const buttonP1 = document.createElement('button');
+        buttonP1.innerText = "Soldier";
+        buttonP1.addEventListener('click', function () {
+        SoliderAlive=false;daytime();
+        });
+        lettersContainer.appendChild(buttonP1);
+      }
+
+      if(BotanistAlive){
+        const lettersContainer = document.querySelector('.letters');
+        const buttonP2 = document.createElement('button');
+        buttonP2.innerText = "Botanist";
+        buttonP2.addEventListener('click', function () {
+        BotanistAlive=false;daytime();
+        });
+        lettersContainer.appendChild(buttonP2);
+      }
+      
+      if(LumberAlive){
+        const lettersContainer = document.querySelector('.letters');
+        const buttonP3 = document.createElement('button');
+        buttonP3.innerText = "Lumbersmith";
+        buttonP3.addEventListener('click', function () {
+        LumberAlive=false;daytime();
+        });
+        lettersContainer.appendChild(buttonP3);
+      }
+      
+      if(FarmerAlive){
+        const lettersContainer = document.querySelector('.letters');
+        const buttonP4 = document.createElement('button');
+        buttonP4.innerText = "Farmer";
+        buttonP4.addEventListener('click', function () {
+        FarmerAlive=false;daytime();
+        });
+        lettersContainer.appendChild(buttonP4);
+      }
+
+      if(scientists > 0){
+        const lettersContainer = document.querySelector('.letters');
+        const buttonP5 = document.createElement('button');
+        buttonP5.innerText = "Scientist";
+        buttonP5.addEventListener('click', function () {
+        scientists = scientists - 1;daytime();
+        });
+        lettersContainer.appendChild(buttonP5);
+      }  
+  }
   
   // Initialize the game when the page loads
   window.addEventListener('load', initializeGame);
