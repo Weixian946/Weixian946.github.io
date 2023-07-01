@@ -4,8 +4,8 @@ const CrisesList = "Maximum Resources needed are 5 ammo, 2 timber and 1 herb";
 
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
-  '\nA    2 Ammo    1 specimen    1 scientist',
-  '\nB    5 Ammo    None    1 personnel',
+  '\nA    2 Ammo    None    1 scientist',
+  '\nB    5 Ammo    1 specimen    1 personnel',
   '\nC    2 Ammo    None    5 food',
   '\nD    1 herb    None    5 food',
   '\nE    1 Ammo    None    1 personnel',
@@ -177,7 +177,9 @@ const array1 = [
     if (result=="A"){
         ammo = ammo - 2;};
     if (result=="B"){
-        ammo = ammo - 5;};
+        ammo = ammo - 5;
+        specimens = specimens + 1;
+      };
     if (result=="C"){
         ammo = ammo - 2;};
     if (result=="D"){
