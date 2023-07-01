@@ -19,7 +19,7 @@ const CrisesList = "Maximum Resources needed are 5 ammo, 2 timber and 1 herb";
 
 const array1 = [
     'A. Scientist Abducted \n Choice A-Expend 2 Ammo to rescue scientist. \n Choice B-lose 1 scientist',
-    'B. Horde Wave: \n Choice A-Expend 5 Ammo to defeat the horde; \n Choice B-lose 1 personnel',
+    'B. Horde Wave: \n Choice A-Expend 5 Ammo to defeat the horde and gain 1 specimen; \n Choice B-lose 1 personnel',
     'C. Grain Silo Sabotage: \n Choice A-Expend 2 Ammo to prevent sabotage; \n Choice B-lose 5 food',
     'D. Grain Silo Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 5 food',
     'E. Mines detected: \n Choice A-Expend 1 Ammo to de-activate mine; \n Choice B-lose 1 personnel',
@@ -30,31 +30,9 @@ const array1 = [
     'J. Thunderstorm: \n Choice A-Expend 1 timber to prevent flooding; \n Choice B-lose 1 tunnel',
   ];
 
-  const array2 = [
-    'A. Scientist Abducted \n Choice A-Expend 3 Ammo to rescue scientist and gain 1 specimen. \n Choice B-lose 1 scientist',
-    'B. Horde Wave: \n Choice A-Expend 5 Ammo to defeat the horde; \n Choice B-lose 1 personnel',
-    'C. Grain Silo Sabotage: \n Choice A-Expend 2 Ammo to prevent sabotage; \n Choice B-lose 5 food',
-    'D. Grain Silo Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 5 food',
-    'E. Mines detected: \n Choice A-Expend 1 Ammo to de-activate mine; \n Choice B-lose 1 personnel',
-    'F. Bombing imminent: \n Choice A-Expend 1 Timber to strengthen tunnels; \n Choice B-lose 1 tunnel',
-    'G. Decoy Lab needed: \n Choice A-Expend 2 Timber to distract Horde and gain 1 specimen; \n Choice B-lose 1 scientist',
-    'H. Chemical Attack: \n Choice A-Expend 1 Timber and 1 herb to filter air vents; \n Choice B-lose 1 personnel',
-    'I. Trackers nearby: \n Choice A-Expend 2 Ammo to prevent detection; \n Choice B-lose 1 tunnel',
-    'J. Thunderstorm: \n Choice A-Expend 1 timber to prevent flooding; \n Choice B-lose 1 tunnel',
-  ];
+  const array2 = array1;
 
-  const array3 = [
-    'A. Scientist Abducted \n Choice A-Expend 3 Ammo to rescue scientist and gain 1 specimen. \n Choice B-lose 1 scientist',
-    'B. Horde Wave: \n Choice A-Expend 5 Ammo to defeat the horde; \n Choice B-lose 1 personnel',
-    'C. Grain Silo Sabotage: \n Choice A-Expend 2 Ammo to prevent sabotage; \n Choice B-lose 5 food',
-    'D. Grain Silo Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 5 food',
-    'E. Mines detected: \n Choice A-Expend 1 Ammo to de-activate mine; \n Choice B-lose 1 personnel',
-    'F. Bombing imminent: \n Choice A-Expend 1 Timber to strengthen tunnels; \n Choice B-lose 1 tunnel',
-    'G. Decoy Lab needed: \n Choice A-Expend 2 Timber to distract Horde and gain 1 specimen; \n Choice B-lose 1 scientist',
-    'H. Chemical Attack: \n Choice A-Expend 1 Timber and 1 herb to filter air vents; \n Choice B-lose 1 personnel',
-    'I. Trackers nearby: \n Choice A-Expend 2 Ammo to prevent detection; \n Choice B-lose 1 tunnel',
-    'J. Thunderstorm: \n Choice A-Expend 1 timber to prevent flooding; \n Choice B-lose 1 tunnel',
-  ];
+  const array3 = array1;
 
   // Define the starting conditions for lose
   let tunnels = 6;
