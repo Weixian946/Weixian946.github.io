@@ -1,6 +1,6 @@
 // Define the list of crises to choose from
 
-const CrisesList = "Maximum Resources needed are 5 ammo, 2 timber and 1 herb";
+const CrisesList = "Maximum Resources needed are 5 ammo, 2 timber and 1 herb.\n The crisis deck has 10 cards randomly arranged. On the 11th and 21st day, it is shuffled and used again until day 30.";
 
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
@@ -123,7 +123,7 @@ const array1 = [
       const messageContainer = document.querySelector('.message');
       messageContainer.innerText = `It is Night ${n+1}.`
       const statusContainer = document.querySelector('.status');
-      statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+      statusContainer.innerText = `Lose Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists, ${29-n} days remaining. None can reach zero.\n Win Condition: You have ${ProcessedSpecimens} Processed Specimens. Accumulate 10 before Day 30!\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = array[n];
 
@@ -259,7 +259,7 @@ const array1 = [
   function daytime() {
 
     const statusContainer = document.querySelector('.status');
-    statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
+      statusContainer.innerText = `Lose Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists, ${29-n} days remaining. None can reach zero.\n Win Condition: You have ${ProcessedSpecimens} Processed Specimens. Accumulate 10 before Day 30!\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
 
     if (WinOrLose()){
       //do nothing
