@@ -1,6 +1,6 @@
 // Define the list of crises to choose from
 
-const CrisesList = "There are 48 nights in total. Every 15 randomly arranged normal nights is followed by a worse Horde Wave night. \n Normal nights includes 3 Silent Nights where zero resources are needed. \n The maximum resources needed for the normal nights are 3 ammo, 2 timber and 1 herb.\n Hordes1/2/3 need 2/3/5 ammo, 0/1/2 herbs, 1/2/3 timbers but gain 1/2/4 specimens upon success. \n Failure to pass Horde Wave = Game Over";
+const CrisesList = "Maximum Resources needed are 4 ammo, 2 timber and 1 herb.\n The crisis deck has 10 cards randomly arranged. On the 11th and 21st day, it is shuffled and used again until day 30.";
 
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
@@ -16,36 +16,22 @@ const CrisesList = "There are 48 nights in total. Every 15 randomly arranged nor
   '\nJ    1 timber    None    1 tunnel',
 ];*/
 
-// Description; AMMO, TIMBER, HERB ;  BONUS SPECIMEN; SCIENTIST, PERSONNEL, FOOD, TUNNEL
-// array1 = [["Scientist Abducted!",2,0,0,0,1,0,0,0,1,0,0,]]
 
-// 15 NightTimes including 3 Non-events and 12 Crises
 const array1 = [
-    'A. Scientist Abducted \n Choice A-Expend 3 Ammo to rescue scientist. \n Choice B-lose 1 scientist',
-    'B. Mini Horde Wave: \n Choice A-Expend 2 Ammo to defeat the mini horde; \n Choice B-lose 1 personnel',
-    'C. Farm under attack: \n Choice A-Expend 1 Ammo to prevent sabotage; \n Choice B-lose 1 food',
-    'D. Farm Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 2 food',
-    'E. Mines detected: \n Choice A-Expend 2 Ammo to de-activate mine; \n Choice B-lose 1 personnel',
+    'A. Scientist Abducted \n Choice A-Expend 2 Ammo to rescue scientist. \n Choice B-lose 1 scientist',
+    'B. Horde Wave: \n Choice A-Expend 4 Ammo to defeat the horde and gain 1 specimen; \n Choice B-lose 1 personnel',
+    'C. Farm under attack: \n Choice A-Expend 2 Ammo to prevent sabotage; \n Choice B-lose 1 food',
+    'D. Farm Contaminated: \n Choice A-Expend 1 herb to decontaminate; \n Choice B-lose 1 food',
+    'E. Mines detected: \n Choice A-Expend 1 Ammo to de-activate mine; \n Choice B-lose 1 personnel',
     'F. Bombing imminent: \n Choice A-Expend 1 Timber to strengthen tunnels; \n Choice B-lose 1 tunnel',
-    'G. Decoy Lab needed: \n Choice A-Expend 2 Timber to distract Horde; \n Choice B-lose 1 scientist',
+    'G. Decoy Lab needed: \n Choice A-Expend 2 Timber to distract Horde and gain 1 specimen; \n Choice B-lose 1 scientist',
     'H. Chemical Attack: \n Choice A-Expend 1 Timber and 1 herb to filter air vents; \n Choice B-lose 1 personnel',
-    'I. Trackers nearby: \n Choice A-Expend 1 Ammo to prevent detection; \n Choice B-lose 1 tunnel',
+    'I. Trackers nearby: \n Choice A-Expend 2 Ammo to prevent detection; \n Choice B-lose 1 tunnel',
     'J. Thunderstorm: \n Choice A-Expend 1 timber to prevent flooding; \n Choice B-lose 1 tunnel',
-    'K. Silent Night - Nothing happens.',
-    'K. Silent Night - Nothing happens.',
-    'K. Silent Night - Nothing happens.',
-    'L. Firewall needed: \n Choice A-Expend 1 timber and 1 ammo; \n Choice B-lose 1 personnel',
-    'M. Personnel bleeding: \n Choice A-Expend 1 herb and 1 ammo; \n Choice B-lose 1 personnel',
   ];
 
-  const Horde1 = ['X. HORDE WAVE 1: \n Choice A-Expend 2 ammo and 1 timber and gain 1 specimen; \n Choice B-lose all personnel',
-  ];
-
-  const Horde2 = ['Y. HORDE WAVE 2: \n Choice A-Expend 1 herb and 3 ammo and 2 timber and gain 2 specimen; \n Choice B-lose all personnel',
-  ];
-
-  const Horde3 = ['Z. HORDE WAVE 3: \n Choice A-Expend 2 herb and 5 ammo and 3 timber and gain 4 specimen; \n Choice B-lose all personnel',
-  ];
+  // K. Firewall needed: \n Choice A-Expend 1 timber and 1 ammo; \n Choice B-lose 1 personnel'
+  // L. Personnel bleeding: \n Choice A-Expend 1 herb and 1 ammo; \n Choice B-lose 1 personnel'
 
   const array2 = array1;
 
@@ -69,16 +55,12 @@ const array1 = [
   let n = 0;
   let CrisisAtHand = '';
 
-  // Define the life and hunger status of personnel
+  // Define the life status of personnel
   let SoliderAlive = true;
   let BotanistAlive = true;
   let LumberAlive = true;
   let FarmerAlive = true;
   let someonejustdied = false;
-  let Soliderhungertoken = 0;
-  let Botanisthungertoken = 0;
-  let Lumbersmithhungertoken = 0;
-  let Farmerhungertoken = 0;
  
   // shuffle the crises deck using Durstenfeld shuffle algorithm */
     function shuffleArray(array) {
@@ -93,8 +75,8 @@ const array1 = [
     shuffleArray(array1);
     shuffleArray(array2);
     shuffleArray(array3);
-    // const arrayTemporary = array1.concat(array2)
-    const array = array1.concat(Horde1).concat(array2).concat(Horde2).concat(array3).concat(Horde3)
+    const arrayTemporary = array1.concat(array2)
+    const array = arrayTemporary.concat(array3)
 
   // Initialize the game
   function initializeGame() {
@@ -102,7 +84,7 @@ const array1 = [
     personnel = 4;
     scientists = 2;
     specimens = 0;
-    ammo = 3;
+    ammo = 4;
     food = 12;
     timber = 2;
     herb = 1;
@@ -149,95 +131,55 @@ const array1 = [
       wordContainer.innerText = array[n];
 
       // Generate the choice buttons
-      if((array[n][0]=="A" && ammo < 3) ||(array[n][0]=="B" && ammo < 2) ||(array[n][0]=="C" && ammo < 1) ||(array[n][0]=="D" && herb < 1) ||(array[n][0]=="E" && ammo < 2) ||(array[n][0]=="F" && timber < 1) ||(array[n][0]=="G" && timber  < 2) ||(array[n][0]=="H" && (timber < 1 || herb < 1)) ||(array[n][0]=="I" && ammo < 1) ||(array[n][0]=="J" && timber < 1) || (array[n][0]=="L" && (timber < 1 || ammo < 1)) ||(array[n][0]=="M" && (ammo < 1 || herb < 1)) ||(array[n][0]=="X" && (ammo < 2 || timber < 1)) ||(array[n][0]=="Y" && (ammo < 3 || herb < 1 || timber < 2))||(array[n][0]=="Z" && (ammo < 5 || herb < 2 || timber < 3)))
-        {
+      if((array[n][0]=="A" && ammo < 2) ||(array[n][0]=="B" && ammo < 4) ||(array[n][0]=="C" && ammo < 2) ||(array[n][0]=="D" && herb < 1) ||(array[n][0]=="E" && ammo < 1) ||(array[n][0]=="F" && timber < 1) ||(array[n][0]=="G" && timber  < 2) ||(array[n][0]=="H" && (timber < 1 || herb < 1)) ||(array[n][0]=="I" && ammo < 2) ||(array[n][0]=="J" && timber < 1) ){
         const messageContainer = document.querySelector('.message');
         messageContainer.innerText += "You do not have enough resources for Choice A";
-        const button2 = document.createElement('button');
-        button2.innerText = "Choice B";
-        button2.addEventListener('click', function () {
-        updateSurvivalNumbers(array[n]); daytime();
+      } else{
+        const button = document.createElement('button');
+        button.innerText = "Choice A";
+        button.addEventListener('click', function () {
+        updateResourceNumbers(array[n]); daytime(); 
         });
-        lettersContainer.appendChild(button2);
-        } else {
-          if (array[n][0]=="K"){
-          const messageContainer = document.querySelector('.message');
-          messageContainer.innerText += "No action needed";
-          const button = document.createElement('button');
-          button.innerText = "OK";
-          button.addEventListener('click', function () {
-          daytime(); 
-          });
-          lettersContainer.appendChild(button);
-          }
-        
-          else{
-          const button = document.createElement('button');
-          button.innerText = "Choice A";
-          button.addEventListener('click', function () {
-          updateResourceNumbers(array[n]); daytime();
-          });
-          lettersContainer.appendChild(button); 
-          const button2 = document.createElement('button');
-          button2.innerText = "Choice B";
-          button2.addEventListener('click', function () {
-          updateSurvivalNumbers(array[n]); daytime();
-          });
-          lettersContainer.appendChild(button2);
-          };
-      }
+        lettersContainer.appendChild(button);
+      };
+      
+      const button2 = document.createElement('button');
+      button2.innerText = "Choice B";
+      button2.addEventListener('click', function () {
+      updateSurvivalNumbers(array[n]); daytime();
+      });
+      lettersContainer.appendChild(button2);
     }
   }
 
   // Handle a choice A
   function updateResourceNumbers(sentence) {
-    let result = sentence.substring(0, 1);
+    let result = sentence.substring(0, 1)
     if (result=="A"){
-        ammo = ammo - 3;};
-    if (result=="B"){
         ammo = ammo - 2;};
+    if (result=="B"){
+        ammo = ammo - 4;
+        specimens = specimens + 1;
+      };
     if (result=="C"){
         ammo = ammo - 2;};
     if (result=="D"){
-        herb = herb - 1;};
+        herb = herb - 1;
+        specimens = specimens + 1;};
     if (result=="E"){
-        ammo = ammo - 2;};
+        ammo = ammo - 1;};
     if (result=="F"){
         timber = timber - 1;};
     if (result=="G"){
-        timber = timber - 2;};
+        timber = timber - 2;
+        specimens = specimens + 1;};
     if (result=="H"){
         timber = timber - 1;
         herb = herb - 1;};
     if (result=="I"){
-        ammo = ammo - 1;};
+        ammo = ammo - 2;};
     if (result=="J"){
         timber = timber - 1;};
-    if (result=="L"){
-          timber = timber - 1;
-          ammo = ammo - 1;
-        };
-    if (result=="M"){
-            herb = herb - 1;
-            ammo = ammo - 1;
-          };
-    if (result=="X"){
-        timber = timber - 1;
-        ammo = ammo - 2;
-        specimens = specimens + 1;
-    };
-    if (result=="Y"){
-      herb = herb - 1;
-      timber = timber - 2;
-      ammo = ammo - 3;
-      specimens = specimens + 2;
-    };
-    if (result=="Z"){
-      herb = herb - 2;
-      timber = timber - 3;
-      ammo = ammo - 5;
-      specimens = specimens + 4;
-    };
 
     }
 
@@ -251,7 +193,7 @@ const array1 = [
     if (result=="C"){
         food = food - 1;};
     if (result=="D"){
-        food = food - 2;};
+        food = food - 1;};
     if (result=="E"){
         someonejustdied = true;};
     if (result=="F"){
@@ -264,16 +206,6 @@ const array1 = [
         tunnels = tunnels - 1;};
     if (result=="J"){
         tunnels = tunnels - 1;};
-    if (result=="L"){
-      personnel = personnel - 1;};
-    if (result=="M"){
-      personnel = personnel - 1;};
-    if (result=="X"){
-      personnel = 0;};
-    if (result=="Y"){
-      personnel = 0;};
-    if (result=="Z"){
-      personnel = 0;};
   }
   
   
@@ -298,7 +230,7 @@ const array1 = [
         const statusContainer = document.querySelector('.status');
         statusContainer.innerText = `Survival Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientists} scientists,${ProcessedSpecimens} Processed Specimens.\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens.` ;
         return true
-    } else if (tunnels == 0 || scientists == 0 || personnel == 0 || n == 47) {
+    } else if (tunnels == 0 || scientists == 0 || personnel == 0 || n == 29) {
         // clear old buttons
         const letterButtons = document.querySelectorAll('.letters button');
         const lettersContainer = document.querySelector('.letters');
@@ -349,40 +281,22 @@ const array1 = [
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = ""
 
-      // if someone is too hungry, he dies
-      if (Soliderhungertoken >=3){
-        SoliderAlive = false;
-      }
-      if (Botanisthungertoken >=3){
-        BotanistAlive = false;
-      }
-      if (Lumbersmithhungertoken >=3){
-        LumberAlive = false;
-      }
-      if (Farmerhungertoken >=3){
-        FarmerAlive = false;
-      }
-
 
       // check if anyone just died
       if(someonejustdied){
         WhoDies();
         } else  {
-          //feed the personnel at the start of every day 
+          //feed the personnel at the start of every day
           if ((food < (personnel+scientists)) && (food != 0)) {
             food = 0;
             const wordContainer = document.querySelector('.word');
             wordContainer.innerText = "Not enough food."
-            WhoHungry(); 
+            WhoDies(); 
           } else {
             if(food==0){
               //do nothing
             }else{
-              food = food - personnel - scientists;
-              Soliderhungertoken = 0;  
-              Botanisthungertoken = 0;
-              Lumbersmithhungertoken = 0;
-              Farmerhungertoken = 0;
+              food = food - personnel - scientists;  
             }
             const messageContainer = document.querySelector('.message');
             messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
@@ -410,7 +324,7 @@ const array1 = [
     lettersContainer.removeChild(button);
     });
 
-    if(SoliderAlive && Soliderhungertoken == 0){
+    if(SoliderAlive){
       // show the role
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = "What do you want the solider to do? ";
@@ -445,7 +359,7 @@ const array1 = [
       lettersContainer.appendChild(buttonS4);
     } else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Solider not available";
+      wordContainer.innerText = "Solider was removed from game";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -479,7 +393,7 @@ const array1 = [
     const wordContainer = document.querySelector('.word');
     wordContainer.innerText = "What do you want the Botanist to do? ";
 
-    if(BotanistAlive && Botanisthungertoken == 0 ){
+    if(BotanistAlive){
     // Generate the choice buttons
     const buttonB1 = document.createElement('button');
     buttonB1.innerText = "1 Herb";
@@ -503,7 +417,7 @@ const array1 = [
     lettersContainer.appendChild(buttonB3);
     }else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Botanist not available";
+      wordContainer.innerText = "Botanist was removed from game";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -539,7 +453,7 @@ const array1 = [
     const wordContainer = document.querySelector('.word');
     wordContainer.innerText = "What do you want the Lumbersmith to do? ";
     
-    if(LumberAlive && Lumbersmithhungertoken == 0){
+    if(LumberAlive){
     // Generate the choice buttons
     const buttonL1 = document.createElement('button');
     buttonL1.innerText = "1 Ammo";
@@ -570,7 +484,7 @@ const array1 = [
     lettersContainer.appendChild(buttonL4);
     }else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Lumbersmith not available";
+      wordContainer.innerText = "Lumbersmith was removed from game";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -604,7 +518,7 @@ const array1 = [
     const wordContainer = document.querySelector('.word');
     wordContainer.innerText = "What do you want the farmer to do? ";
 
-    if (FarmerAlive && Farmerhungertoken == 0){
+    if (FarmerAlive){
     // Generate the choice buttons
     const buttonF1 = document.createElement('button');
     buttonF1.innerText = "1 Ammo";
@@ -635,7 +549,7 @@ const array1 = [
     lettersContainer.appendChild(buttonF4);
     }else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Farmer alive";
+      wordContainer.innerText = "Farmer was removed from game";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -708,7 +622,7 @@ function WhoDies(){
   someonejustdied = false;
 
   const wordContainer = document.querySelector('.word');
-  wordContainer.innerText += "Which character is removed from the game?";
+  wordContainer.innerText += "Which personnel is removed from the game?";
       // Generate the choice buttons
       if(SoliderAlive){
         const lettersContainer = document.querySelector('.letters');
@@ -760,53 +674,6 @@ function WhoDies(){
         lettersContainer.appendChild(buttonP5);
       }  
   }
-
-  function WhoHungry(){
-
-  
-    const wordContainer = document.querySelector('.word');
-    wordContainer.innerText += "Which personnel gets a hunger token? \n WARNING: if a character gets 3 tokens, he dies.";
-        // Generate the choice buttons
-        if(SoliderAlive){
-          const lettersContainer = document.querySelector('.letters');
-          const buttonP1 = document.createElement('button');
-          buttonP1.innerText = `Soldier. Existing Hunger Tokens = ${Soliderhungertoken}`;
-          buttonP1.addEventListener('click', function () {
-          Soliderhungertoken += 1;daytime();
-          });
-          lettersContainer.appendChild(buttonP1);
-        }
-  
-        if(BotanistAlive){
-          const lettersContainer = document.querySelector('.letters');
-          const buttonP2 = document.createElement('button');
-          buttonP2.innerText = `Botanist. Existing Hunger Tokens = ${Botanisthungertoken}`;
-          buttonP2.addEventListener('click', function () {
-          Botanisthungertoken += 1;daytime();
-          });
-          lettersContainer.appendChild(buttonP2);
-        }
-        
-        if(LumberAlive){
-          const lettersContainer = document.querySelector('.letters');
-          const buttonP3 = document.createElement('button');
-          buttonP3.innerText = `Lumbersmith. Existing Hunger Tokens = ${Lumbersmithhungertoken}`;
-          buttonP3.addEventListener('click', function () {
-          Lumbersmithhungertoken += 1;;daytime();
-          });
-          lettersContainer.appendChild(buttonP3);
-        }
-        
-        if(FarmerAlive){
-          const lettersContainer = document.querySelector('.letters');
-          const buttonP4 = document.createElement('button');
-          buttonP4.innerText = `Farmer. Existing Hunger Tokens = ${Farmerhungertoken}`;
-          buttonP4.addEventListener('click', function () {
-          Farmerhungertoken += 1;;daytime();
-          });
-          lettersContainer.appendChild(buttonP4);
-        }
-    }
   
   // Initialize the game when the page loads
   window.addEventListener('load', initializeGame);
