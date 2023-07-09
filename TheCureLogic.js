@@ -61,7 +61,7 @@ const array1 = [
   let target = 10; // the goal for processed specimens
 
   // Define the starting number for resources
-  let ammo = 4;
+  let ammo = 3;
   let food = 12;
   let timber = 2;
   let herb = 1;
@@ -79,6 +79,7 @@ const array1 = [
   let Botanisthungertoken = 0;
   let Lumbersmithhungertoken = 0;
   let Farmerhungertoken = 0;
+  let hungertokens = 0;
  
   // shuffle the crises deck using Durstenfeld shuffle algorithm */
     function shuffleArray(array) {
@@ -98,15 +99,35 @@ const array1 = [
 
   // Initialize the game
   function initializeGame() {
-    tunnels = 4;
-    personnel = 4;
-    scientists = 2;
-    specimens = 0;
-    ammo = 3;
-    food = 12;
-    timber = 2;
-    herb = 1;
-    n = 0; 
+
+  // Initialize the starting conditions for lose
+  tunnels = 4;
+  personnel = 4; //minimum is always 4 
+  scientists = 2;
+  // Init the starting conditions for win
+  specimens = 0;
+  ProcessedSpecimens = 0;
+  
+  // Init the starting number for resources
+  ammo = 3;
+  food = 12;
+  timber = 2;
+  herb = 1;
+
+  n = 0;
+  CrisisAtHand = '';
+
+  // Init the life and hunger status of personnel
+  SoliderAlive = true;
+  BotanistAlive = true;
+  LumberAlive = true;
+  FarmerAlive = true;
+  someonejustdied = false;
+  Soliderhungertoken = 0;
+  Botanisthungertoken = 0;
+  Lumbersmithhungertoken = 0;
+  Farmerhungertoken = 0;
+  hungertokens = 0;
        
     // Clear any previous message or status
     const messageContainer = document.querySelector('.message');
@@ -119,12 +140,12 @@ const array1 = [
     CrisesContainer.innerText = `${CrisesList}` ;
 
     // Display the first crisis
-    updateCrisisDisplay(0);
+    NighTime(0);
   
   }
 
-  // Update the Crisis to display
-  function updateCrisisDisplay(n) {
+  // Update the Night 
+  function NighTime(n) {
 
     if (WinOrLose()){
       // do nothing.
@@ -349,46 +370,63 @@ const array1 = [
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = ""
 
-      // if someone is too hungry, he dies
-      if (Soliderhungertoken >=3){
-        SoliderAlive = false;
-      }
-      if (Botanisthungertoken >=3){
-        BotanistAlive = false;
-      }
-      if (Lumbersmithhungertoken >=3){
-        LumberAlive = false;
-      }
-      if (Farmerhungertoken >=3){
-        FarmerAlive = false;
-      }
 
 
       // check if anyone just died
       if(someonejustdied){
         WhoDies();
-        } else  {
-          //feed the personnel at the start of every day 
-          if ((food < (personnel+scientists)) && (food != 0)) {
-            food = 0;
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText = "Not enough food."
-            WhoHungry(); 
-          } else {
-            if(food==0){
-              //do nothing
-            }else{
+        } else /* try to feed the characters*/{
+          // if there is not enough food, collect hunger tokens until the food is resolved
+          if (food < (personnel+scientists)) {
+            let i = personnel + scientists - food - hungertokens;
+            if (i>0){
+              const wordContainer = document.querySelector('.word');
+              wordContainer.innerText += "Not enough food."
+              hungertokens += 1;
+              WhoHungry(); 
+            } else {
+              hungertokens = 0;
+              food = 0;
+
+              if (SoliderAlive && Soliderhungertoken == 3){
+                SoliderAlive = false;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Solider removed from game due to starvation." 
+              }
+              if (BotanistAlive && Botanisthungertoken == 3){
+                BotanistAlive = false;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Botanist removed from game due to starvation."
+              }
+              if (LumberAlive && Lumbersmithhungertoken== 3){
+                LumberAlive = false;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Lumbersmith removed from game due to starvation."
+              }
+              if (FarmerAlive && Farmerhungertoken == 3){
+                FarmerAlive = false;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Farmer removed from game due to starvation."
+              }
+              const messageContainer = document.querySelector('.message');
+              messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
+              DisplaySolider(); 
+            }
+          } else /* if there was enough food, feed all characters and reset any hunger tokens to zero*/{
               food = food - personnel - scientists;
               Soliderhungertoken = 0;  
               Botanisthungertoken = 0;
               Lumbersmithhungertoken = 0;
               Farmerhungertoken = 0;
+              const messageContainer = document.querySelector('.message');
+              messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
+              DisplaySolider();  
             }
-            const messageContainer = document.querySelector('.message');
-            messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientists} food has been deducted` ;
-            DisplaySolider();  
-          };
-      };    
+          };   
     }; // end of else loop for Win or Lose 
   }
 
@@ -413,7 +451,7 @@ const array1 = [
     if(SoliderAlive && Soliderhungertoken == 0){
       // show the role
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "What do you want the solider to do? ";
+      wordContainer.innerText += "What do you want the solider to do? ";
       // Generate the choice buttons
       const lettersContainer = document.querySelector('.letters');
       const buttonS1 = document.createElement('button');
@@ -445,7 +483,7 @@ const array1 = [
       lettersContainer.appendChild(buttonS4);
     } else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Solider not available";
+      wordContainer.innerText += "Solider not available";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -635,7 +673,7 @@ const array1 = [
     lettersContainer.appendChild(buttonF4);
     }else{
       const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = "Farmer alive";
+      wordContainer.innerText = "Farmer not available";
       const lettersContainer = document.querySelector('.letters');
       const button = document.createElement('button');
       button.innerText = "Next personnel";
@@ -687,14 +725,14 @@ const array1 = [
             specimens = 0;
             const messageContainer = document.querySelector('.message');
             messageContainer.innerText += `\n ${ProcessedSpecimens} specimens processed in total. ${target-ProcessedSpecimens} to go!` ;
-          }; n=n+1; updateCrisisDisplay(n);
+          }; n=n+1; NighTime(n);
           });
           lettersContainer.appendChild(buttonSc1);
       }
     const buttonSc2 = document.createElement('button');
     buttonSc2.innerText = "Collect Food";
     buttonSc2.addEventListener('click', function () {
-    food = food + scientists; n=n+1; updateCrisisDisplay(n);
+    food = food + scientists; n=n+1; NighTime(n);
     });
     lettersContainer.appendChild(buttonSc2);
   } else {
@@ -767,7 +805,7 @@ function WhoDies(){
     const wordContainer = document.querySelector('.word');
     wordContainer.innerText += "Which personnel gets a hunger token? \n WARNING: if a character gets 3 tokens, he dies.";
         // Generate the choice buttons
-        if(SoliderAlive){
+        if(SoliderAlive && Soliderhungertoken < 3){
           const lettersContainer = document.querySelector('.letters');
           const buttonP1 = document.createElement('button');
           buttonP1.innerText = `Soldier. Existing Hunger Tokens = ${Soliderhungertoken}`;
@@ -777,7 +815,7 @@ function WhoDies(){
           lettersContainer.appendChild(buttonP1);
         }
   
-        if(BotanistAlive){
+        if(BotanistAlive && Botanisthungertoken < 3){
           const lettersContainer = document.querySelector('.letters');
           const buttonP2 = document.createElement('button');
           buttonP2.innerText = `Botanist. Existing Hunger Tokens = ${Botanisthungertoken}`;
@@ -787,22 +825,22 @@ function WhoDies(){
           lettersContainer.appendChild(buttonP2);
         }
         
-        if(LumberAlive){
+        if(LumberAlive && Lumbersmithhungertoken < 3){
           const lettersContainer = document.querySelector('.letters');
           const buttonP3 = document.createElement('button');
           buttonP3.innerText = `Lumbersmith. Existing Hunger Tokens = ${Lumbersmithhungertoken}`;
           buttonP3.addEventListener('click', function () {
-          Lumbersmithhungertoken += 1;;daytime();
+          Lumbersmithhungertoken += 1;daytime();
           });
           lettersContainer.appendChild(buttonP3);
         }
         
-        if(FarmerAlive){
+        if(FarmerAlive && Farmerhungertoken < 3){
           const lettersContainer = document.querySelector('.letters');
           const buttonP4 = document.createElement('button');
           buttonP4.innerText = `Farmer. Existing Hunger Tokens = ${Farmerhungertoken}`;
           buttonP4.addEventListener('click', function () {
-          Farmerhungertoken += 1;;daytime();
+          Farmerhungertoken += 1;daytime();
           });
           lettersContainer.appendChild(buttonP4);
         }
