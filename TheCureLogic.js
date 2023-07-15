@@ -167,7 +167,7 @@ const array1 = [
     herb = 1;
     tech = 1;
 
-    n = 0;
+    n = -1;
     CrisisAtHand = '';
 
     // Init the life and hunger status of personnel
@@ -199,7 +199,6 @@ const array1 = [
     CrisesContainer.innerText = `${CrisesList}` ;
 
     // Display the first crisis
-    console.log(array[13][0])
     daytime();
   
   }
@@ -222,22 +221,9 @@ const array1 = [
       // clear old buttons
       clearbuttons();
 
-      //process any specimens
-      if (specimens >= (scientist+RobotAsst)){
-        ProcessedSpecimens = ProcessedSpecimens + scientist + 0.5*RobotAsst;
-        specimens = specimens - scientist - RobotAsst;
-      } else{
-        if (specimens > 0){
-          ProcessedSpecimens = ProcessedSpecimens + scientist;
-          specimens = specimens - scientist;
-          ProcessedSpecimens = ProcessedSpecimens + 0.5*specimens;
-          specimens = 0;
-        }
-      };
-
       // display status
       const messageContainer = document.querySelector('.message');
-      messageContainer.innerText = `It is Night ${n+1}.`
+      messageContainer.innerText = `It is Night ${n}.`
       updatestatus();
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = CreateDescription(n);
@@ -321,6 +307,22 @@ const array1 = [
   }
 
   function daytime() {
+
+    //Process specimens from previous night
+    if (specimens >= (scientist+RobotAsst)){
+      ProcessedSpecimens = ProcessedSpecimens + scientist + 0.5*RobotAsst;
+      specimens = specimens - scientist - RobotAsst;
+    } else{
+      if (specimens > 0){
+        ProcessedSpecimens = ProcessedSpecimens + scientist;
+        specimens = specimens - scientist;
+        ProcessedSpecimens = ProcessedSpecimens + 0.5*specimens;
+        specimens = 0;
+      }
+    };
+
+    // then move on to next day
+    n+=1;
 
     updatestatus();
 
@@ -694,14 +696,14 @@ function Displayrobots() {
       const buttonSc1 = document.createElement('button');
       buttonSc1.innerText = "Collect Specimens";
       buttonSc1.addEventListener('click', function () {
-        specimens = specimens + robots; n=n+1; NighTime(n)
+        specimens = specimens + robots; NighTime(n)
         });
         lettersContainer.appendChild(buttonSc1);
         
       const buttonSc2 = document.createElement('button');
       buttonSc2.innerText = "Collect Food";
       buttonSc2.addEventListener('click', function () {
-      food = food + robots; n=n+1; NighTime(n);
+      food = food + robots; NighTime(n);
       });
       lettersContainer.appendChild(buttonSc2);
     }else{
@@ -711,12 +713,12 @@ function Displayrobots() {
       const buttonSc1 = document.createElement('button');
       buttonSc1.innerText = "OK";
       buttonSc1.addEventListener('click', function () {
-      n=n+1; NighTime(n);
+      NighTime(n);
       });
       lettersContainer.appendChild(buttonSc1);
     }
   } else {
-      n=n+1; NighTime(n);
+      NighTime(n);
   }
 }
 
