@@ -3,7 +3,7 @@ const totalnights = 25;
 const target = 30; // the goal for processed specimens
 // Define the list of crises to choose from
 
-const CrisesList = `You have only ${totalnights} nights = 13 easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then 10 harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 0/1 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
+const CrisesList = `Total of ${totalnights} nights = 13 easier Nights (max 2ammo/1herb/1timber/2tech/combos),then 1 MegaHorde,then 10 harder nights(max 2ammo/1herb/2timber/2tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
@@ -123,7 +123,6 @@ const array1 = [
   let Lumbersmithhungertoken = 0;
   let Farmerhungertoken = 0;
   let hungryPersonThisRound = 0;
-  let skippedPersonThisRound = 0;
   let hungertokensthisround = 0;
   const hungertokenlimit = 3;
   let SoldierFirstTime = true;
@@ -183,7 +182,6 @@ const array1 = [
     Lumbersmithhungertoken = 0;
     Farmerhungertoken = 0;
     hungryPersonThisRound = 0;
-    skippedPersonThisRound = 0;
     hungertokensthisround = 0;
     SoldierFirstTime = true;
     BotanistFirstTime = true;
@@ -219,7 +217,6 @@ const array1 = [
       LumberFirstTime = true;
       FarmerFirstTime = true;
       hungryPersonThisRound = 0;
-      skippedPersonThisRound = 0;
       hungertokensthisround = 0;
 
       // clear old buttons
@@ -282,7 +279,6 @@ const array1 = [
 
     if (array[n][2][1]>0){
       someonejustskipped = true;
-      skippedPersonThisRound = 1;
       
       DaysOut = array[n][2][1];
       if (DaysOut >25){
@@ -342,8 +338,8 @@ const array1 = [
         whoskipped();
         } else /* try to feed the characters*/{
           // if there is not enough food, give out hunger tokens until the hunger is resolved
-          if (food < (personnel+scientist-skippedPersonThisRound)) {
-            hungryPersonThisRound = scientist + personnel -skippedPersonThisRound - food - hungertokensthisround;
+          if (food < (personnel+scientist)) {
+            hungryPersonThisRound = scientist + personnel - food - hungertokensthisround;
             if (hungryPersonThisRound>0){
                 WhoHungry(); // keep coming back to whohungry and issuing hungertokesn until no more hungry people this round
             } else {
@@ -868,7 +864,7 @@ function whoskipped(){
   let PersonnelDaysV = array[n][2][1];
   let PersonnelStr = "";
   if (PersonnelDaysV > 0){
-    PersonnelStr= `1 Personnel for ${PersonnelDaysV} days, `;
+    PersonnelStr= `1 Personnel for ${PersonnelDaysV} days (but must still be fed), `;
   }
 
   let FoodV = array[n][2][2];
