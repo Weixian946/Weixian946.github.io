@@ -1,9 +1,9 @@
 //define the number of nights and the target
-const totalnights = 25;
+const totalnights = 24;
 const target = 30; // the goal for processed specimens
 // Define the list of crises to choose from
 
-const CrisesList = `Total of ${totalnights} nights = 13 easier Nights (max 2ammo/1herb/1timber/2tech/combos),then 1 MegaHorde,then 10 harder nights(max 2ammo/1herb/2timber/2tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
+const CrisesList = `Total of ${totalnights} nights = 12 easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then 10 harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
@@ -34,10 +34,9 @@ const array1 = [
 ["Small chemical attack",[1,0,1,0,0],[0,1,0,0]],
 ["Farm Fence Broken",[0,1,0,0,0],[0,0,1,0]],
 ["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
-["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
 ];
 
-// 13 easy NightTimes including 2 Silent Night
+// 12 easy NightTimes including 1 Silent Night
 /*const array1 = [
     'B. Small Horde Wave: \n Choice A-Expend 2 Ammo to defeat the mini horde; \n Choice B-lose 1 personnel for 1 day',
     'C. Farm attack by dogs: \n Choice A-Expend 1 Ammo to repel dogs; \n Choice B-lose 1 food',
@@ -80,7 +79,7 @@ const array1 = [
     ["Chemical Attack",[0,0,1,1,0],[0,99,0,0]],
     ["Big Tunnel Sabotage",[1,1,0,0,0],[0,0,0,2]],
     ["Big Thunderstorm",[0,2,0,0,0],[0,0,0,2]],
-    ["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
+    ["Locusts Wave",[1,1,1,0,0],[0,1,1,1]],
     ["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
     ];
 
@@ -167,7 +166,7 @@ const array1 = [
     herb = 1;
     tech = 1;
 
-    n = -1;
+    n = 12;
     CrisisAtHand = '';
 
     // Init the life and hunger status of personnel
@@ -204,7 +203,7 @@ const array1 = [
   }
 
   // Update the Night 
-  function NighTime(n) {
+  function NighTime() {
 
     if (WinOrLose()){
       // do nothing.
@@ -218,20 +217,7 @@ const array1 = [
       hungryPersonThisRound = 0;
       hungertokensthisround = 0;
 
-      // clear old buttons
-      clearbuttons();
-
-      // display status
-      const messageContainer = document.querySelector('.message');
-      messageContainer.innerText = `It is Night ${n}.`
-      updatestatus();
-      const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = CreateDescription(n);
-
-      // Generate the choice buttons
-      CreateButtons(n);
-
-      //count down days out if they are out
+      //count down days out if they are any
       if (SoldierOut > 0){
         SoldierOut -=1;
       }
@@ -244,29 +230,42 @@ const array1 = [
       if (FarmerOut > 0){
         FarmerOut -=1;
       }
+
+      // clear old buttons
+      clearbuttons();
+
+      // display status
+      const messageContainer = document.querySelector('.message');
+      messageContainer.innerText = `It is Night ${n+1}.`
+      updatestatus();
+      const wordContainer = document.querySelector('.word');
+      wordContainer.innerText = CreateDescription(n);
+
+      // Generate the choice buttons
+      CreateButtons(n);
+      n=n+1;
     } // end of win or lose loop
   }
 
   // Handle a choice A
-  function updateResourceNumbers(n) {
-    ammo -= array[n][1][0];
-    timber -= array[n][1][1];
-    herb -= array[n][1][2];
-    tech -= array[n][1][3];
-    specimens += array[n][1][4];
-
+  function updateResourceNumbers(j) {
+    ammo -= array[j][1][0];
+    timber -= array[j][1][1];
+    herb -= array[j][1][2];
+    tech -= array[j][1][3];
+    specimens += array[j][1][4];
   }
 
   // Handle a choice B
-  function updateSurvivalNumbers(n) {
-    scientist -= array[n][2][0];
-    food -= array[n][2][2];
-    tunnels -= array[n][2][3];
+  function updateSurvivalNumbers(j) {
+    scientist -= array[j][2][0];
+    food -= array[j][2][2];
+    tunnels -= array[j][2][3];
 
-    if (array[n][2][1]>0){
+    if (array[j][2][1]>0){
       someonejustskipped = true;
       
-      DaysOut = array[n][2][1];
+      DaysOut = array[j][2][1];
       if (DaysOut >25){
         personnel -=1;
       }
@@ -321,9 +320,6 @@ const array1 = [
       }
     };
 
-    // then move on to next day
-    n+=1;
-
     updatestatus();
 
     if (WinOrLose()){
@@ -373,7 +369,7 @@ const array1 = [
               }
               const messageContainer = document.querySelector('.message');
               messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientist} food has been deducted` ;
-              DisplaySoldier(); 
+              DisplaySoldier();
             }
           } else /* if there was enough food for all the people of this round, reduce hunger tokens by 1*/{
                   food = food - personnel - scientist;
@@ -390,9 +386,10 @@ const array1 = [
                     Farmerhungertoken -= 1; 
                   }
                   const messageContainer = document.querySelector('.message');
-                  messageContainer.innerText = `It is Day ${n+1}. \n All characters fed! Therefore, each personnel's hunger token (if any) reduced by 1!` ;
-                  DisplaySoldier();  
+                  messageContainer.innerText = `It is Day ${n+1}. \n All characters fed! Therefore, each personnel's hunger token (if any) reduced by 1!` ; 
+                  DisplaySoldier();
             }
+
           };   
     }; // end of else loop for Win or Lose 
   }
@@ -696,14 +693,14 @@ function Displayrobots() {
       const buttonSc1 = document.createElement('button');
       buttonSc1.innerText = "Collect Specimens";
       buttonSc1.addEventListener('click', function () {
-        specimens = specimens + robots; NighTime(n)
+        specimens = specimens + robots; NighTime()
         });
         lettersContainer.appendChild(buttonSc1);
         
       const buttonSc2 = document.createElement('button');
       buttonSc2.innerText = "Collect Food";
       buttonSc2.addEventListener('click', function () {
-      food = food + robots; NighTime(n);
+      food = food + robots; NighTime();
       });
       lettersContainer.appendChild(buttonSc2);
     }else{
@@ -713,12 +710,12 @@ function Displayrobots() {
       const buttonSc1 = document.createElement('button');
       buttonSc1.innerText = "OK";
       buttonSc1.addEventListener('click', function () {
-      NighTime(n);
+      NighTime();
       });
       lettersContainer.appendChild(buttonSc1);
     }
   } else {
-      NighTime(n);
+      NighTime();
   }
 }
 
@@ -817,36 +814,36 @@ function whoskipped(){
   }
 
   // function to create description based on array
-  function CreateDescription(n){
+  function CreateDescription(i){
   let description = "";
   // Description; NEEDS: AMMO, TIMBER, HERB, TECH, BONUS SPECIMEN; PENALTIES: SCIENTIST, PERSONNEL, FOOD, TUNNEL
   // create string for expenditure needs
-  let ammoV = array[n][1][0];
+  let ammoV = array[i][1][0];
   console.log(ammoV);
   let ammoStr = ``;
   if (ammoV > 0){
     ammoStr = `${ammoV} ammo, `;
   }
 
-  let timberV = array[n][1][1];
+  let timberV = array[i][1][1];
   let timberStr = ``;
   if (timberV > 0){
     timberStr = `${timberV} timber, `;
   }
 
-  let herbV = array[n][1][2];
+  let herbV = array[i][1][2];
   let herbStr = ``;
   if (herbV > 0){
     herbStr = `${herbV} herb, `;
   }
 
-  let techV = array[n][1][3];
+  let techV = array[i][1][3];
   let techStr = ``;
   if (techV > 0){
     techStr = `${techV} tech, `;
   }
 
-  let specimenV = array[n][1][4];
+  let specimenV = array[i][1][4];
   let specimenStr = ``;
   if (specimenV > 0){
     specimenStr = `but gain ${specimenV} specimen.`;
@@ -857,24 +854,28 @@ function whoskipped(){
 
   // create string for penalties
   // Description; NEEDS: AMMO, TIMBER, HERB, TECH, BONUS SPECIMEN; PENALTIES: SCIENTIST, PERSONNEL, FOOD, TUNNEL
-  let ScientistV = array[n][2][0];
+  let ScientistV = array[i][2][0];
   let ScientistStr = "";
   if (ScientistV > 0){
     ScientistStr = `${ScientistV} Scientist, `;
   }
 
-  let PersonnelDaysV = array[n][2][1];
+  let PersonnelDaysV = array[i][2][1];
   let PersonnelStr = "";
   if (PersonnelDaysV > 0){
-    PersonnelStr= `1 Personnel for ${PersonnelDaysV} days (but must still be fed), `;
+    if(PersonnelDaysV==99){
+      PersonnelStr= `1 Personnel permanently `;
+    }else{
+      PersonnelStr= `1 Personnel for ${PersonnelDaysV} days (but must still be fed), `;
+    }
   }
 
-  let FoodV = array[n][2][2];
+  let FoodV = array[i][2][2];
   let FoodStr = "";
   if (FoodV > 0){
     FoodStr = `${FoodV} Food, `;
   }
-  let TunnelV = array[n][2][3];
+  let TunnelV = array[i][2][3];
   let TunnelStr = "";
   if (TunnelV > 0){
     TunnelStr = `${TunnelV} Tunnel, `;
@@ -882,44 +883,44 @@ function whoskipped(){
 
   let ChoiceBStr = `Lose ${ScientistStr}${PersonnelStr}${FoodStr}${TunnelStr}`;
 
-  if (array[n][0][0]=="#"){
-    description = `${array[n][0]}`;
+  if (array[i][0][0]=="#"){
+    description = `${array[i][0]}`;
   }else{
-    description = `${array[n][0]} \n Choice A - ${ChoiceAStr} \n Choice B - ${ChoiceBStr}`;
+    description = `${array[i][0]} \n Choice A - ${ChoiceAStr} \n Choice B - ${ChoiceBStr}`;
   }
   return description;
   }
 
-  function CreateButtons(n){
+  function CreateButtons(i){
 
     //define
     const messageContainer = document.querySelector('.message');
     const lettersContainer = document.querySelector('.letters');
 
     // Description; NEEDS: AMMO, TIMBER, HERB, TECH, BONUS SPECIMEN; PENALTIES: SCIENTIST, PERSONNEL, FOOD, TUNNEL
-    let ammoV = array[n][1][0];
+    let ammoV = array[i][1][0];
 
-    let timberV = array[n][1][1];
+    let timberV = array[i][1][1];
 
-    let herbV = array[n][1][2];
+    let herbV = array[i][1][2];
   
-    let techV = array[n][1][3];
+    let techV = array[i][1][3];
 
     if (ammo < ammoV || timber < timberV || herb < herbV || tech < techV ){
         messageContainer.innerText += "You do not have enough resources for Choice A";
         const button2 = document.createElement('button');
         button2.innerText = "Choice B";
         button2.addEventListener('click', function () {
-        updateSurvivalNumbers(n); daytime();
+        updateSurvivalNumbers(i);daytime();
         });
         lettersContainer.appendChild(button2);
     }else {
-          if (array[n][0][0]=="#"){
+          if (array[i][0][0]=="#"){
             messageContainer.innerText += "What do you want to do?";
             const button = document.createElement('button');
             button.innerText = "Do Nothing.";
             button.addEventListener('click', function () {
-            daytime(); 
+            n = n + 1;daytime(); 
             });
             lettersContainer.appendChild(button);
 
@@ -927,36 +928,58 @@ function whoskipped(){
               // do nothing
               messageContainer.innerText += "You do not have enough resources for a robot.";
             }else{
-              const button2 = document.createElement('button');
-              button2.innerText = "Build a normal robot for 2 tech and 1 timber.";
-              button2.addEventListener('click', function () {
-              tech = tech - 2; timber = timber - 1; robots = robots + 1; daytime(); 
+              const button = document.createElement('button');
+              button.innerText = "Build a normal robot for 2 tech and 1 timber.";
+              button.addEventListener('click', function () {
+              tech = tech - 2; timber = timber - 1; robots = robots + 1; n = n + 1;daytime(); 
               });
-              lettersContainer.appendChild(button2);
+              lettersContainer.appendChild(button);
+            }
+
+            if (tech < 4 || timber < 2){
+              // do nothing
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build 2 normal robots for 4 tech and 2 timber.";
+              button.addEventListener('click', function () {
+              tech = tech - 4; timber = timber - 2; robots = robots + 2; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
             }
             
             if (tech < 2 || herb < 1 || ammo < 1){
               // do nothing
               messageContainer.innerText += "You do not have enough resources for an assistant science robot.";
             }else{
-              const button2 = document.createElement('button');
-              button2.innerText = "Build an assistant science robot for 2 tech and 1 herb and 1 ammo.";
-              button2.addEventListener('click', function () {
-              tech = tech - 2; herb = herb - 1; ammo = ammo - 1; RobotAsst = RobotAsst + 1; daytime(); 
+              const button = document.createElement('button');
+              button.innerText = "Build an assistant science robot for 2 tech and 1 herb and 1 ammo.";
+              button.addEventListener('click', function () {
+              tech = tech - 2; herb = herb - 1; ammo = ammo - 1; RobotAsst = RobotAsst + 1; n = n + 1;daytime(); 
               });
-              lettersContainer.appendChild(button2);
+              lettersContainer.appendChild(button);
+            }
+
+            if (tech < 4 || herb < 2 || ammo < 2){
+              // do nothing
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build 2 assistant science robots for 4 tech and 2 herb and 2 ammo.";
+              button.addEventListener('click', function () {
+              tech = tech - 4; herb = herb - 2; ammo = ammo - 2; RobotAsst = RobotAsst + 2; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
             }
           }else{
           const button = document.createElement('button');
           button.innerText = "Choice A";
           button.addEventListener('click', function () {
-          updateResourceNumbers(n); daytime();
+          updateResourceNumbers(i);daytime();
           });
           lettersContainer.appendChild(button); 
           const button2 = document.createElement('button');
           button2.innerText = "Choice B";
           button2.addEventListener('click', function () {
-          updateSurvivalNumbers(n); daytime();
+          updateSurvivalNumbers(i); daytime();
           });
           lettersContainer.appendChild(button2);
           };
