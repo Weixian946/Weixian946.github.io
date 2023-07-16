@@ -166,7 +166,7 @@ const array1 = [
     herb = 1;
     tech = 1;
 
-    n = 12;
+    n = 0;
     CrisisAtHand = '';
 
     // Init the life and hunger status of personnel
