@@ -1,3 +1,10 @@
+//define the number of nights and the target
+const totalnights = 24;
+const target = 30; // the goal for processed specimens
+// Define the list of crises to choose from
+
+const CrisesList = `Total of ${totalnights} nights = 12 easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then 10 harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
+
 /*const CrisesList = [
   'Index    Needs   Bonus   Penalty',
   '\nA    2 Ammo    None    1 scientist',
@@ -26,6 +33,7 @@ const array1 = [
 ["Fire needed",[1,1,0,0,0],[0,1,0,0]],
 ["Small chemical attack",[1,0,1,0,0],[0,1,0,0]],
 ["Farm Fence Broken",[0,1,0,0,0],[0,0,1,0]],
+["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
 ];
 
 // 12 easy NightTimes including 1 Silent Night
@@ -72,6 +80,7 @@ const array1 = [
     ["Big Tunnel Sabotage",[1,1,0,0,0],[0,0,0,2]],
     ["Big Thunderstorm",[0,2,0,0,0],[0,0,0,2]],
     ["Locusts Wave",[1,1,1,0,0],[0,1,1,1]],
+    ["#Silent Night",[0,0,0,0,0],[0,0,0,0]],
     ];
 
   //const Horde1 = ['X. Mega Horde Wave: \n Choice A-Expend 2 ammo and 1 timber and 1 herb and gain 2 specimen; \n Choice B-lose all personnel',];
@@ -80,26 +89,6 @@ const array1 = [
   
   //const Horde2 = ['Y. Ultra Horde Wave: \n Choice A-Expend 3 ammo and 2 timber and 2 herb and gain 3 specimen; \n Choice B-lose all personnel',];
   const Horde2 = [["ULTRA HORDE WAVE!!",[3,2,2,0,3],[1,0,0,0]]];
-
-  // shuffle the crises deck using Durstenfeld shuffle algorithm */
-  function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
-        }
-    }
-
-  shuffleArray(array1);
-  shuffleArray(array2);
-  // const arrayTemporary = array1.concat(array2)
-  const array = array1.concat(Horde1).concat(array2).concat(Horde2)
-
-  let totalnights = array.length // 
-  let target = 22; // no. of specimens to be processed
-
-  const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
   // Define the starting conditions for lose
   let tunnels = 3;
@@ -134,11 +123,27 @@ const array1 = [
   let Farmerhungertoken = 0;
   let hungryPersonThisRound = 0;
   let hungertokensthisround = 0;
-  const hungertokenlimit = 2;
+  const hungertokenlimit = 3;
   let SoldierFirstTime = true;
   let BotanistFirstTime = true;
   let LumberFirstTime = true;
   let FarmerFirstTime = true;
+
+ 
+  // shuffle the crises deck using Durstenfeld shuffle algorithm */
+    function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    shuffleArray(array1);
+    shuffleArray(array2);
+    // const arrayTemporary = array1.concat(array2)
+    const array = array1.concat(Horde1).concat(array2).concat(Horde2)
 
   // Initialize the game
   function initializeGame() {
@@ -660,30 +665,6 @@ const array1 = [
       tech = tech + scientist; Displayrobots();
       });
       lettersContainer.appendChild(buttonSc3);
-
-      if (tech < 2 || ammo < 1 || timber < 1){
-        // do nothing
-        messageContainer.innerText += "You do not have enough resources for a robot.";
-      }else{
-        const button = document.createElement('button');
-        button.innerText = "Build a normal robot for 2 tech and 1 ammo and 1 timber.";
-        button.addEventListener('click', function () {
-        tech = tech - 2; timber = timber - 1; ammo = ammo - 1;robots = robots + 1; n = n + 1;Displayrobots(); 
-        });
-        lettersContainer.appendChild(button);
-      }
-      
-      if (tech < 2 || herb < 1 || ammo < 1){
-        // do nothing
-        messageContainer.innerText += "You do not have enough resources for an assistant science robot.";
-      }else{
-        const button = document.createElement('button');
-        button.innerText = "Build an assistant science robot for 2 tech and 1 herb and 1 ammo.";
-        button.addEventListener('click', function () {
-        tech = tech - 2; herb = herb - 1; ammo = ammo - 1; RobotAsst = RobotAsst + 1; n = n + 1;Displayrobots(); 
-        });
-        lettersContainer.appendChild(button);
-      }
     } else {
       WinOrLose();
     }
@@ -902,7 +883,11 @@ function whoskipped(){
 
   let ChoiceBStr = `Lose ${ScientistStr}${PersonnelStr}${FoodStr}${TunnelStr}`;
 
-  description = `${array[i][0]} \n Choice A - ${ChoiceAStr} \n Choice B - ${ChoiceBStr}`;
+  if (array[i][0][0]=="#"){
+    description = `${array[i][0]}`;
+  }else{
+    description = `${array[i][0]} \n Choice A - ${ChoiceAStr} \n Choice B - ${ChoiceBStr}`;
+  }
   return description;
   }
 
@@ -929,7 +914,62 @@ function whoskipped(){
         updateSurvivalNumbers(i);daytime();
         });
         lettersContainer.appendChild(button2);
-    }else{
+    }else {
+          if (array[i][0][0]=="#"){
+            messageContainer.innerText += "What do you want to do?";
+            const button = document.createElement('button');
+            button.innerText = "Do Nothing.";
+            button.addEventListener('click', function () {
+            n = n + 1;daytime(); 
+            });
+            lettersContainer.appendChild(button);
+
+            if (tech < 2 || timber < 1){
+              // do nothing
+              messageContainer.innerText += "You do not have enough resources for a robot.";
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build a normal robot for 2 tech and 1 timber.";
+              button.addEventListener('click', function () {
+              tech = tech - 2; timber = timber - 1; robots = robots + 1; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
+            }
+
+            if (tech < 4 || timber < 2){
+              // do nothing
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build 2 normal robots for 4 tech and 2 timber.";
+              button.addEventListener('click', function () {
+              tech = tech - 4; timber = timber - 2; robots = robots + 2; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
+            }
+            
+            if (tech < 2 || herb < 1 || ammo < 1){
+              // do nothing
+              messageContainer.innerText += "You do not have enough resources for an assistant science robot.";
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build an assistant science robot for 2 tech and 1 herb and 1 ammo.";
+              button.addEventListener('click', function () {
+              tech = tech - 2; herb = herb - 1; ammo = ammo - 1; RobotAsst = RobotAsst + 1; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
+            }
+
+            if (tech < 4 || herb < 2 || ammo < 2){
+              // do nothing
+            }else{
+              const button = document.createElement('button');
+              button.innerText = "Build 2 assistant science robots for 4 tech and 2 herb and 2 ammo.";
+              button.addEventListener('click', function () {
+              tech = tech - 4; herb = herb - 2; ammo = ammo - 2; RobotAsst = RobotAsst + 2; n = n + 1;daytime(); 
+              });
+              lettersContainer.appendChild(button);
+            }
+          }else{
           const button = document.createElement('button');
           button.innerText = "Choice A";
           button.addEventListener('click', function () {
@@ -942,9 +982,9 @@ function whoskipped(){
           updateSurvivalNumbers(i); daytime();
           });
           lettersContainer.appendChild(button2);
-        };
+          };
+      }
   }
-
 
   function clearbuttons(){
     const letterButtons = document.querySelectorAll('.letters button');
@@ -960,16 +1000,8 @@ function whoskipped(){
 
   function updatestatus(){
     const statusContainer = document.querySelector('.status');
-    statusContainer.innerText = 
-    `Lose Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientist} scientist, ${totalnights-1-n} days remaining. None can reach zero.
-    
-    Win Condition: You have ${ProcessedSpecimens} Processed Specimens. Accumulate ${target} before Day ${totalnights}!
-    
-    Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens, ${tech} tech.
-    
-    Hungertokens - Soldier:${Soldierhungertoken}, Botanist:${Botanisthungertoken}, Lumbersmith:${Lumbersmithhungertoken}, Farmer:${Farmerhungertoken}. Max per charcter:${hungertokenlimit} 
-    
-    Robots - Normal Robots:${robots}, Assistant Robots: ${RobotAsst}`;
+    statusContainer.innerText = `Lose Conditions: You have ${tunnels} tunnels,${personnel} personnel,${scientist} scientist, ${totalnights-1-n} days remaining. None can reach zero.\n Win Condition: You have ${ProcessedSpecimens} Processed Specimens. Accumulate ${target} before Day ${totalnights}!\n Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens, ${tech} tech.`;
+
   }
   
   // Initialize the game when the page loads
