@@ -93,11 +93,28 @@ const array1 = [
 
   shuffleArray(array1);
   shuffleArray(array2);
-  // const arrayTemporary = array1.concat(array2)
   const array = array1.concat(Horde1).concat(array2).concat(Horde2)
 
   let totalnights = array.length // 
   let target = 22; // no. of specimens to be processed
+
+  function SumOf(ColIndex){
+    var TotalRes = 0;
+    for(var counter = 0; counter < array.length;counter++){
+      TotalRes += array[counter][1][ColIndex]
+    } 
+    return TotalRes
+  }
+ 
+  console.log(`total ammo needed for the game is ${SumOf(0)}`)
+  console.log(`total timber needed for the game is ${SumOf(1)}`)
+  console.log(`total herb needed for the game is ${SumOf(2)}`)
+  console.log(`total tech needed for the game is ${SumOf(3)}`)
+
+   
+
+
+  
 
   const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
@@ -293,6 +310,7 @@ const array1 = [
         buttonEnd.addEventListener('click', function () {
         initializeGame();  
         });
+        const lettersContainer = document.querySelector('.letters');
         lettersContainer.appendChild(buttonEnd);   
         return true   
     } else {
@@ -314,6 +332,59 @@ const array1 = [
         specimens = 0;
       }
     };
+
+    // console helps track the maximum needed of each resource
+    
+    if (n < 11){
+      let RandomCrisisIndex = Math.floor(Math.random() * (11-n));
+      let PercentChance = Math.round(1/(11-n)*100);
+      console.log(`there is a ${PercentChance} % chance that the next card is ${array[n+RandomCrisisIndex][0]}`)
+
+      function MaxOf(ColIndex){
+        var MaxRes = 0;
+        for(var counter = n; counter < 11;counter++){
+          if (array[counter][1][ColIndex]>MaxRes){
+            MaxRes = array[counter][1][ColIndex]
+          }
+        } 
+        return MaxRes
+      }
+     
+      console.log(`max ammo needed for the first 11 nights is ${MaxOf(0)}`)
+      console.log(`max timber needed for the 11 nights is ${MaxOf(1)}`)
+      console.log(`max herb needed for the 11 nights is ${MaxOf(2)}`)
+      console.log(`max tech needed for the 11 nights is ${MaxOf(3)}`)
+    }
+
+    if (n == 11){
+      console.log(`the next card is ${array[11][0]}`)
+    }
+   
+    if (n > 11 && n < (array.length-1)){
+      let RandomCrisisIndex = Math.floor(Math.random() * (array.length-1-n));
+      let PercentChance = Math.round(1/(array.length-1-n)*100);
+      console.log(`there is a ${PercentChance} % chance that the next card is ${array[n+RandomCrisisIndex][0]}`)
+      function MaxOf(ColIndex){
+        var MaxRes = 0;
+        for(var counter = 12; counter < (array.length -1);counter++){
+          if (array[counter][1][ColIndex]>MaxRes){
+            MaxRes = array[counter][1][ColIndex]
+          }
+        } 
+        return MaxRes
+      }
+     
+      console.log(`max ammo needed for the game is ${MaxOf(0)}`)
+      console.log(`max timber needed for the game is ${MaxOf(1)}`)
+      console.log(`max herb needed for the game is ${MaxOf(2)}`)
+      console.log(`max tech needed for the game is ${MaxOf(3)}`)
+    }
+
+    if (n == (array.length-1)){
+      console.log(`the next card is ${array[(array.length-1)][0]}`)
+    }
+
+    
 
     updatestatus();
 
@@ -663,6 +734,7 @@ const array1 = [
 
       if (tech < 2 || ammo < 1 || timber < 1){
         // do nothing
+        const messageContainer = document.querySelector('.message');
         messageContainer.innerText += "You do not have enough resources for a robot.";
       }else{
         const button = document.createElement('button');
@@ -675,6 +747,7 @@ const array1 = [
       
       if (tech < 2 || herb < 1 || ammo < 1){
         // do nothing
+        const messageContainer = document.querySelector('.message');
         messageContainer.innerText += "You do not have enough resources for an assistant science robot.";
       }else{
         const button = document.createElement('button');
