@@ -679,7 +679,7 @@ const array1 = [
       lettersContainer.appendChild(buttonSc2);
 
       const buttonSc3 = document.createElement('button');
-      buttonSc3.innerText = "Collect 2 Tech";
+      buttonSc3.innerText = "Collect Tech";
       buttonSc3.addEventListener('click', function () {
       tech = tech + scientist; Displayrobots();
       });
@@ -728,8 +728,7 @@ function Displayrobots() {
   if (robots>0){
     // if there is enough sun, robots work
     let sun = Math.random()
-    console.log(`sun today is at ${sun*100} % intensity `)
-    if (sun>0.25){
+    if (sun>0.4){
       // show the role
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = "What do you want the robots to do? ";
@@ -815,11 +814,6 @@ function whoskipped(){
   }
 
   function ResolveHunger(){
-      // clear old buttons
-      clearbuttons();
-      // clear old messages
-      const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = ""
         hungryPersonThisRound = scientist + personnel - food - hungertokensthisround;
         if (hungryPersonThisRound >0){
             const wordContainer = document.querySelector('.word');
@@ -866,7 +860,6 @@ function whoskipped(){
             }
         }else {
           // if hungry people are fed with hunger tokens.. then check if anyone died from too many hunger tokens.
-          food = 0;
           if (SoldierOut==0 && Soldierhungertoken == hungertokenlimit){
             SoldierOut = 99;
             personnel -= 1;

@@ -96,7 +96,7 @@ const array1 = [
   const array = array1.concat(Horde1).concat(array2).concat(Horde2)
 
   let totalnights = array.length // 
-  const target = 30; // no. of specimens to be processed
+  let target = 22; // no. of specimens to be processed
 
   function SumOf(ColIndex){
     var TotalRes = 0;
@@ -151,7 +151,7 @@ const array1 = [
   let Farmerhungertoken = 0;
   let hungryPersonThisRound = 0;
   let hungertokensthisround = 0;
-  const hungertokenlimit = 3;
+  const hungertokenlimit = 2;
   let SoldierFirstTime = true;
   let BotanistFirstTime = true;
   let LumberFirstTime = true;
@@ -211,6 +211,7 @@ const array1 = [
 
     // Display the first crisis
     daytime();
+  
   }
 
   // Update the Night 
@@ -402,14 +403,60 @@ const array1 = [
         } else /* try to feed the characters*/{
           // if there is not enough food, give out hunger tokens until the hunger is resolved
           if (food < (personnel+scientist)) {
-              ResolveHunger(); // ResolveHunger iterates within itself and issues hungertokesn until no more hungry people this round
-          } else /* if there was enough food for all the people of this round, reduce hunger tokens by 1*/{
-              food = food - personnel - scientist;
+            hungryPersonThisRound = scientist + personnel - food - hungertokensthisround;
+            if (hungryPersonThisRound>0){
+                WhoHungry(); // keep coming back to whohungry and issuing hungertokesn until no more hungry people this round
+            } else {
+              // if there was not enough food this round, but hungertokensthisround issued.. then check if anyone died from too many hunger tokens.
+              food = 0;
+              if (SoldierOut==0 && Soldierhungertoken == hungertokenlimit){
+                SoldierOut = 99;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Soldier removed from game due to overdose." 
+              }
+              if (BotanistOut==0 && Botanisthungertoken == hungertokenlimit){
+                BotanistOut = 99;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Botanist removed from game due to overdose."
+              }
+              if (LumberOut==0 && Lumbersmithhungertoken== hungertokenlimit){
+                LumberOut = 99;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Lumbersmith removed from game due to overdose."
+              }
+              if (FarmerOut==0 && Farmerhungertoken == hungertokenlimit){
+                FarmerOut = 99;
+                personnel -= 1;
+                const wordContainer = document.querySelector('.word');
+                wordContainer.innerText += "\n Farmer removed from game due to overdose."
+              }
               const messageContainer = document.querySelector('.message');
-              messageContainer.innerText = `It is Day ${n+1}. \n All characters fed!` ; 
+              messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientist} food has been deducted` ;
               DisplaySoldier();
-          }
-        };   
+            }
+          } else /* if there was enough food for all the people of this round, reduce hunger tokens by 1*/{
+                  food = food - personnel - scientist;
+                  if (Soldierhungertoken > 0){
+                    Soldierhungertoken -= 1; 
+                  }
+                  if (Botanisthungertoken > 0){
+                    Botanisthungertoken -= 1; 
+                  }
+                  if (Lumbersmithhungertoken > 0){
+                    Lumbersmithhungertoken -= 1; 
+                  }
+                  if (Farmerhungertoken > 0){
+                    Farmerhungertoken -= 1; 
+                  }
+                  const messageContainer = document.querySelector('.message');
+                  messageContainer.innerText = `It is Day ${n+1}. \n All characters fed! Therefore, each personnel's hunger token (if any) reduced by 1!` ; 
+                  DisplaySoldier();
+            }
+
+          };   
     }; // end of else loop for Win or Lose 
   }
 
@@ -679,34 +726,34 @@ const array1 = [
       lettersContainer.appendChild(buttonSc2);
 
       const buttonSc3 = document.createElement('button');
-      buttonSc3.innerText = "Collect 2 Tech";
+      buttonSc3.innerText = "Collect Tech";
       buttonSc3.addEventListener('click', function () {
       tech = tech + scientist; Displayrobots();
       });
       lettersContainer.appendChild(buttonSc3);
 
-      if (tech < 1 || timber < 1){
+      if (tech < 2 || ammo < 1 || timber < 1){
         // do nothing
         const messageContainer = document.querySelector('.message');
         messageContainer.innerText += "You do not have enough resources for a robot.";
       }else{
         const button = document.createElement('button');
-        button.innerText = "Build a normal robot for 1 tech and 1 timber.";
+        button.innerText = "Build a normal robot for 2 tech and 1 ammo and 1 timber.";
         button.addEventListener('click', function () {
-        tech = tech - 1; timber = timber - 1; robots = robots + 1; n = n + 1;Displayrobots(); 
+        tech = tech - 2; timber = timber - 1; ammo = ammo - 1;robots = robots + 1; n = n + 1;Displayrobots(); 
         });
         lettersContainer.appendChild(button);
       }
       
-      if (tech < 1 || herb < 1){
+      if (tech < 2 || herb < 1 || ammo < 1){
         // do nothing
         const messageContainer = document.querySelector('.message');
         messageContainer.innerText += "You do not have enough resources for an assistant science robot.";
       }else{
         const button = document.createElement('button');
-        button.innerText = "Build an assistant science robot for 1 tech and 1 herb.";
+        button.innerText = "Build an assistant science robot for 2 tech and 1 herb and 1 ammo.";
         button.addEventListener('click', function () {
-        tech = tech - 1; herb = herb - 1; RobotAsst = RobotAsst + 1; n = n + 1;Displayrobots(); 
+        tech = tech - 2; herb = herb - 1; ammo = ammo - 1; RobotAsst = RobotAsst + 1; n = n + 1;Displayrobots(); 
         });
         lettersContainer.appendChild(button);
       }
@@ -728,8 +775,7 @@ function Displayrobots() {
   if (robots>0){
     // if there is enough sun, robots work
     let sun = Math.random()
-    console.log(`sun today is at ${sun*100} % intensity `)
-    if (sun>0.25){
+    if (sun>0.4){
       // show the role
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = "What do you want the robots to do? ";
@@ -771,7 +817,7 @@ function whoskipped(){
   someonejustskipped = false;
 
   const wordContainer = document.querySelector('.word');
-  wordContainer.innerText += "Which character skips his turn?";
+  wordContainer.innerText += "Which character is affected by Choice B?";
       // Generate the choice buttons
       if(SoldierOut==0){
         const lettersContainer = document.querySelector('.letters');
@@ -808,93 +854,55 @@ function whoskipped(){
         const buttonP4 = document.createElement('button');
         buttonP4.innerText = "Farmer";
         buttonP4.addEventListener('click', function () {
-        FarmerOut += DaysOut;daytime();
+       FarmerOut += DaysOut;daytime();
         });
         lettersContainer.appendChild(buttonP4);
       } 
   }
 
-  function ResolveHunger(){
-      // clear old buttons
-      clearbuttons();
-      // clear old messages
-      const wordContainer = document.querySelector('.word');
-      wordContainer.innerText = ""
-        hungryPersonThisRound = scientist + personnel - food - hungertokensthisround;
-        if (hungryPersonThisRound >0){
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText += `Not enough food. Which personnel gets a hunger token to replace food? \n WARNING: if a character gets ${hungertokenlimit} tokens, he is removed from the game due to overdose.`;
-            // Generate the choice buttons
-            if(SoldierOut==0 && SoldierFirstTime){
-              const lettersContainer = document.querySelector('.letters');
-              const buttonP1 = document.createElement('button');
-              buttonP1.innerText = `Soldier. Existing Hunger Tokens = ${Soldierhungertoken}`;
-              buttonP1.addEventListener('click', function () {
-              Soldierhungertoken += 1;hungertokensthisround += 1; SoldierFirstTime = false; ResolveHunger();
-              });
-              lettersContainer.appendChild(buttonP1);
-            }
-      
-            if(BotanistOut==0 && BotanistFirstTime){
-              const lettersContainer = document.querySelector('.letters');
-              const buttonP2 = document.createElement('button');
-              buttonP2.innerText = `Botanist. Existing Hunger Tokens = ${Botanisthungertoken}`;
-              buttonP2.addEventListener('click', function () {
-              Botanisthungertoken += 1;hungertokensthisround += 1;BotanistFirstTime = false;ResolveHunger();
-              });
-              lettersContainer.appendChild(buttonP2);
-            }
-            
-            if(LumberOut==0 && LumberFirstTime){
-              const lettersContainer = document.querySelector('.letters');
-              const buttonP3 = document.createElement('button');
-              buttonP3.innerText = `Lumbersmith. Existing Hunger Tokens = ${Lumbersmithhungertoken}`;
-              buttonP3.addEventListener('click', function () {
-              Lumbersmithhungertoken += 1;hungertokensthisround += 1;LumberFirstTime = false;ResolveHunger();
-              });
-              lettersContainer.appendChild(buttonP3);
-            }
-            
-            if(FarmerOut==0 && FarmerFirstTime){
-              const lettersContainer = document.querySelector('.letters');
-              const buttonP4 = document.createElement('button');
-              buttonP4.innerText = `Farmer. Existing Hunger Tokens = ${Farmerhungertoken}`;
-              buttonP4.addEventListener('click', function () {
-              Farmerhungertoken += 1;hungertokensthisround += 1;FarmerFirstTime=false;ResolveHunger();
-              });
-              lettersContainer.appendChild(buttonP4);
-            }
-        }else {
-          // if hungry people are fed with hunger tokens.. then check if anyone died from too many hunger tokens.
-          food = 0;
-          if (SoldierOut==0 && Soldierhungertoken == hungertokenlimit){
-            SoldierOut = 99;
-            personnel -= 1;
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText += "\n Soldier removed from game due to overdose." 
-          }
-          if (BotanistOut==0 && Botanisthungertoken == hungertokenlimit){
-            BotanistOut = 99;
-            personnel -= 1;
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText += "\n Botanist removed from game due to overdose."
-          }
-          if (LumberOut==0 && Lumbersmithhungertoken== hungertokenlimit){
-            LumberOut = 99;
-            personnel -= 1;
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText += "\n Lumbersmith removed from game due to overdose."
-          }
-          if (FarmerOut==0 && Farmerhungertoken == hungertokenlimit){
-            FarmerOut = 99;
-            personnel -= 1;
-            const wordContainer = document.querySelector('.word');
-            wordContainer.innerText += "\n Farmer removed from game due to overdose."
-          }
-          const messageContainer = document.querySelector('.message');
-          messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientist} food has been deducted` ;
-          DisplaySoldier();
+  function WhoHungry(){
+        const wordContainer = document.querySelector('.word');
+        wordContainer.innerText += `Not enough food. Which personnel gets a hunger token to replace food? \n WARNING: if a character gets ${hungertokenlimit} tokens, he is removed from the game due to overdose.`;
+        // Generate the choice buttons
+        if(SoldierOut==0 && SoldierFirstTime){
+          const lettersContainer = document.querySelector('.letters');
+          const buttonP1 = document.createElement('button');
+          buttonP1.innerText = `Soldier. Existing Hunger Tokens = ${Soldierhungertoken}`;
+          buttonP1.addEventListener('click', function () {
+          Soldierhungertoken += 1;hungertokensthisround += 1; SoldierFirstTime = false; daytime();
+          });
+          lettersContainer.appendChild(buttonP1);
         }
+  
+        if(BotanistOut==0 && BotanistFirstTime){
+          const lettersContainer = document.querySelector('.letters');
+          const buttonP2 = document.createElement('button');
+          buttonP2.innerText = `Botanist. Existing Hunger Tokens = ${Botanisthungertoken}`;
+          buttonP2.addEventListener('click', function () {
+          Botanisthungertoken += 1;hungertokensthisround += 1;BotanistFirstTime = false;daytime();
+          });
+          lettersContainer.appendChild(buttonP2);
+        }
+        
+        if(LumberOut==0 && LumberFirstTime){
+          const lettersContainer = document.querySelector('.letters');
+          const buttonP3 = document.createElement('button');
+          buttonP3.innerText = `Lumbersmith. Existing Hunger Tokens = ${Lumbersmithhungertoken}`;
+          buttonP3.addEventListener('click', function () {
+          Lumbersmithhungertoken += 1;hungertokensthisround += 1;LumberFirstTime = false;daytime();
+          });
+          lettersContainer.appendChild(buttonP3);
+        }
+        
+        if(FarmerOut==0 && FarmerFirstTime){
+          const lettersContainer = document.querySelector('.letters');
+          const buttonP4 = document.createElement('button');
+          buttonP4.innerText = `Farmer. Existing Hunger Tokens = ${Farmerhungertoken}`;
+          buttonP4.addEventListener('click', function () {
+          Farmerhungertoken += 1;hungertokensthisround += 1;FarmerFirstTime=false;daytime();
+          });
+          lettersContainer.appendChild(buttonP4);
+        }    
   }
 
   // function to create description based on array
