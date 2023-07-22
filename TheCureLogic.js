@@ -98,24 +98,6 @@ const array1 = [
   let totalnights = array.length // 
   const target = 30; // no. of specimens to be processed
 
-  function SumOf(ColIndex){
-    var TotalRes = 0;
-    for(var counter = 0; counter < array.length;counter++){
-      TotalRes += array[counter][1][ColIndex]
-    } 
-    return TotalRes
-  }
- 
-  console.log(`total ammo needed for the game is ${SumOf(0)}`)
-  console.log(`total timber needed for the game is ${SumOf(1)}`)
-  console.log(`total herb needed for the game is ${SumOf(2)}`)
-  console.log(`total tech needed for the game is ${SumOf(3)}`)
-
-   
-
-
-  
-
   const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
   // Define the starting conditions for lose
@@ -382,6 +364,19 @@ const array1 = [
     if (n == (array.length-1)){
       console.log(`the next card is ${array[(array.length-1)][0]}`)
     }
+
+    function SumOf(ColIndex){
+      var TotalRes = 0;
+      for(var counter = n; counter < array.length;counter++){
+        TotalRes += array[counter][1][ColIndex]
+      } 
+      return TotalRes
+    }
+   
+    console.log(`total ammo needed for the remainder of the game is ${SumOf(0)}`)
+    console.log(`total timber needed for the remainder of the game is ${SumOf(1)}`)
+    console.log(`total herb needed for the remainder of the game is ${SumOf(2)}`)
+    console.log(`total tech needed for the remainder of the game is ${SumOf(3)}`)
 
     
 
@@ -681,7 +676,7 @@ const array1 = [
       const buttonSc3 = document.createElement('button');
       buttonSc3.innerText = "Collect 2 Tech";
       buttonSc3.addEventListener('click', function () {
-      tech = tech + scientist; Displayrobots();
+      tech = tech + 2*scientist; Displayrobots();
       });
       lettersContainer.appendChild(buttonSc3);
 
