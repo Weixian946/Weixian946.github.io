@@ -15,18 +15,21 @@
 // Description; CHOICE A: AMMO, TIMBER, HERB, TECH, BONUS SPECIMEN;
 //CHOICE B: SCIENTIST, # of days personnel is lost (zero means no personnel lost), FOOD, TUNNEL
 const array1 = [
-["Small Horde Wave",[2,0,0,0,0],[0,1,0,0]],
 ["Farm Attack 1",[1,0,0,0,0],[0,0,1,0]],
-["Farm Attack 2",[0,0,1,0,0],[0,0,1,0]],
 ["Small Mines",[0,0,0,1,0],[0,1,0,0]],
 ["Small Bomb Attack",[0,1,0,0,0],[0,0,0,1]],
-["Biological Attack",[0,1,1,0,0],[0,1,0,0]],
 ["Tunnel Sabotage",[1,0,0,0,0],[0,0,0,1]],
 ["Thunderstorm",[0,1,0,0,0],[0,0,0,1]],
-["Fire needed",[1,1,0,0,0],[0,1,0,0]],
-["Small chemical attack",[1,0,1,0,0],[0,1,0,0]],
 ["Farm Fence Broken",[0,1,0,0,0],[0,0,1,0]],
 ];
+
+const array2 = [
+  ["Small Horde Wave",[2,0,0,0,1],[0,1,0,0]],
+  ["Farm Attack 2",[1,0,1,0,1],[0,0,1,0]],
+  ["Biological Attack",[0,1,1,0,1],[0,1,0,0]],
+  ["Fire needed",[1,1,0,0,1],[0,1,0,0]],
+  ["Small chemical attack",[1,0,1,0,1],[0,1,0,0]],
+  ];
 
 // 12 easy NightTimes including 1 Silent Night
 /*const array1 = [
@@ -62,24 +65,28 @@ const array1 = [
 
   // Description; CHOICE A: AMMO, TIMBER, HERB, TECH, BONUS SPECIMEN; 
   //CHOICE B: SCIENTIST, # of days personnel is lost (zero means no personnel lost), FOOD, TUNNEL
-  const array2 = [
-    ["Scientist Abducted",[2,0,0,0,0],[1,0,0,0]],
-    ["Big Horde Wave",[2,1,0,0,1],[0,99,0,0]],
-    ["Big Farm Attack 1",[0,1,1,0,0],[0,0,3,0]],
-    ["Big Farm Attack 2",[1,1,0,0,0],[0,0,2,0]],
-    ["Decoy Lab Needed",[0,2,0,1,0],[1,0,0,0]],
-    ["Chemical Attack",[0,0,1,1,0],[0,99,0,0]],
-    ["Big Tunnel Sabotage",[1,1,0,0,0],[0,0,0,2]],
-    ["Big Thunderstorm",[0,2,0,0,0],[0,0,0,2]],
-    ["Locusts Wave",[1,1,1,0,0],[0,1,1,1]],
+  const array3 = [
+    ["Big Horde Wave",[2,1,0,0,2],[0,99,0,0]],
+    ["Big Farm Attack 1",[1,2,0,0,2],[0,0,3,0]],
+    ["Decoy Lab Needed",[0,2,0,1,2],[1,0,0,0]],
+    ["Chemical Attack",[0,1,1,1,2],[0,99,0,0]],
+    ["Big Tunnel Sabotage",[1,1,1,0,2],[0,0,0,2]],
+    ["Locusts Wave",[1,1,1,0,2],[0,1,1,1]],
     ];
+
+  const array4 = [
+      ["Scientist Abducted",[2,2,0,0,3],[1,0,0,0]],
+      ["Big Farm Attack 2",[1,2,1,0,3],[0,0,2,0]],
+      ["Big Thunderstorm",[0,3,0,0,3],[0,0,0,2]],
+      ];
+
 
   //const Horde1 = ['X. Mega Horde Wave: \n Choice A-Expend 2 ammo and 1 timber and 1 herb and gain 2 specimen; \n Choice B-lose all personnel',];
 
-  const Horde1 = [["MEGA Horde Wave!",[2,1,1,0,2],[1,0,0,0]]];
+  const Horde1 = [["MEGA Horde Wave!",[2,1,1,0,3],[1,0,0,0]]];
   
   //const Horde2 = ['Y. Ultra Horde Wave: \n Choice A-Expend 3 ammo and 2 timber and 2 herb and gain 3 specimen; \n Choice B-lose all personnel',];
-  const Horde2 = [["ULTRA HORDE WAVE!!",[3,2,2,0,3],[1,0,0,0]]];
+  const Horde2 = [["ULTRA HORDE WAVE!!",[3,2,2,0,4],[1,0,0,0]]];
 
   // shuffle the crises deck using Durstenfeld shuffle algorithm */
   function shuffleArray(array) {
@@ -93,7 +100,9 @@ const array1 = [
 
   shuffleArray(array1);
   shuffleArray(array2);
-  const array = array1.concat(Horde1).concat(array2).concat(Horde2)
+  shuffleArray(array3);
+  shuffleArray(array4);
+  const array = array1.concat(array2).concat(Horde1).concat(array3).concat(array4).concat(Horde2)
 
   let totalnights = array.length // 
   const target = 30; // no. of specimens to be processed
@@ -377,8 +386,6 @@ const array1 = [
     console.log(`total timber needed for the remainder of the game is ${SumOf(1)}`)
     console.log(`total herb needed for the remainder of the game is ${SumOf(2)}`)
     console.log(`total tech needed for the remainder of the game is ${SumOf(3)}`)
-
-    
 
     updatestatus();
 
@@ -688,7 +695,7 @@ const array1 = [
         const button = document.createElement('button');
         button.innerText = "Build a normal robot for 1 tech and 1 timber.";
         button.addEventListener('click', function () {
-        tech = tech - 1; timber = timber - 1; robots = robots + 1; n = n + 1;Displayrobots(); 
+        tech = tech - 1; timber = timber - 1; robots = robots + 1;Displayrobots(); 
         });
         lettersContainer.appendChild(button);
       }
@@ -701,7 +708,7 @@ const array1 = [
         const button = document.createElement('button');
         button.innerText = "Build an assistant science robot for 1 tech and 1 herb.";
         button.addEventListener('click', function () {
-        tech = tech - 1; herb = herb - 1; RobotAsst = RobotAsst + 1; n = n + 1;Displayrobots(); 
+        tech = tech - 1; herb = herb - 1; RobotAsst = RobotAsst + 1;Displayrobots(); 
         });
         lettersContainer.appendChild(button);
       }
@@ -722,9 +729,9 @@ function Displayrobots() {
 
   if (robots>0){
     // if there is enough sun, robots work
-    let sun = Math.random()
-    console.log(`sun today is at ${sun*100} % intensity `)
-    if (sun>0.25){
+    //let sun = Math.random()
+    //console.log(`sun today is at ${sun*100} % intensity `)
+    //if (sun>0.25){
       // show the role
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = "What do you want the robots to do? ";
@@ -744,7 +751,7 @@ function Displayrobots() {
       food = food + robots; NighTime();
       });
       lettersContainer.appendChild(buttonSc2);
-    }else{
+    /*}else{
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = "There is insufficient solar power for the robot to work today.";
       const lettersContainer = document.querySelector('.letters');
@@ -754,7 +761,7 @@ function Displayrobots() {
       NighTime();
       });
       lettersContainer.appendChild(buttonSc1);
-    }
+    }*/
   } else {
       NighTime();
   }
