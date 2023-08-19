@@ -107,7 +107,7 @@ const array2 = [
   let totalnights = array.length // 
   const target = 30; // no. of specimens to be processed
 
-  const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
+  //const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
   // Define the starting conditions for lose
   let tunnels = 3;
@@ -119,7 +119,7 @@ const array2 = [
   let specimens = 0;
   let ProcessedSpecimens = 0;
 
-  // Define the starting number for resources
+  // Define the resources
   let ammo = 2;
   let food = 5;
   let timber = 1;
@@ -134,12 +134,14 @@ const array2 = [
   let BotanistOut = 0;
   let LumberOut = 0;
   let FarmerOut = 0;
+  let ScientistOut = 0;
   let someonejustskipped = false;
   let DaysOut = 0;
   let Soldierhungertoken = 0;
   let Botanisthungertoken = 0;
   let Lumbersmithhungertoken = 0;
   let Farmerhungertoken = 0;
+  let Scientisthungertoken = 0;
   let hungryPersonThisRound = 0;
   let hungertokensthisround = 0;
   const hungertokenlimit = 3;
@@ -147,6 +149,7 @@ const array2 = [
   let BotanistFirstTime = true;
   let LumberFirstTime = true;
   let FarmerFirstTime = true;
+  let ScientistFirstTime = true;
 
   // Initialize the game
   function initializeGame() {
@@ -191,14 +194,12 @@ const array2 = [
     FarmerFirstTime = true;
        
     // Clear any previous message or status
-    const messageContainer = document.querySelector('.message');
-    messageContainer.innerText = "" ;
 
     const statusContainer = document.querySelector('.status');
     statusContainer.innerText = "" ;
 
-    const CrisesContainer = document.querySelector('.crises');
-    CrisesContainer.innerText = `${CrisesList}` ;
+    const pictureContainer = document.querySelector('.picture');
+    pictureContainer.innerHTML = `<img src="images/title.png" alt="title">`;
 
     // Display the first crisis
     daytime();
@@ -233,12 +234,14 @@ const array2 = [
         FarmerOut -=1;
       }
 
+      if (ScientistOut > 0){
+        ScientistOut -=1;
+      }
+
       // clear old buttons
       clearbuttons();
 
       // display status
-      const messageContainer = document.querySelector('.message');
-      messageContainer.innerText = `It is Night ${n+1}.`
       updatestatus();
       const wordContainer = document.querySelector('.word');
       wordContainer.innerText = CreateDescription(n);
@@ -284,16 +287,16 @@ const array2 = [
     if (ProcessedSpecimens >= target) {
         // creat new words and status
         const wordContainer = document.querySelector('.word');
-        wordContainer.innerText = "YOU WIN!";
-        const messageContainer = document.querySelector('.message');
-        messageContainer.innerText = `You have ${ProcessedSpecimens} Processed Specimens!`;
+        wordContainer.innerText = "";
+        const pictureContainer = document.querySelector('.picture');
+        pictureContainer.innerHTML = `<img src="images/you win.png" alt="you win">`;
         updatestatus();
         return true
     } else if (tunnels == 0 || scientist == 0 || personnel == 0 || n == totalnights) {
         const wordContainer = document.querySelector('.word');
-        wordContainer.innerText = "GAME OVER.";
-        const messageContainer = document.querySelector('.message');
-        messageContainer.innerText = `You have ${tunnels} tunnels, ${personnel} personnel, ${scientist} scientist and ${n+1} nights have passed.`;
+        wordContainer.innerText = "";
+        const pictureContainer = document.querySelector('.picture');
+        pictureContainer.innerHTML = `<img src="images/gameover.png" alt="gameover">`;
         updatestatus();
         const buttonEnd = document.createElement('button');
         buttonEnd.innerText = "Click to Restart";
@@ -405,10 +408,8 @@ const array2 = [
           // if there is not enough food, give out hunger tokens until the hunger is resolved
           if (food < (personnel+scientist)) {
               ResolveHunger(); // ResolveHunger iterates within itself and issues hungertokesn until no more hungry people this round
-          } else /* if there was enough food for all the people of this round, reduce hunger tokens by 1*/{
+          } else {
               food = food - personnel - scientist;
-              const messageContainer = document.querySelector('.message');
-              messageContainer.innerText = `It is Day ${n+1}. \n All characters fed!` ; 
               DisplaySoldier();
           }
         };   
@@ -533,8 +534,6 @@ const array2 = [
       clearbuttons();
 
     // update the message
-    //const messageContainer = document.querySelector('.message');
-    //messageContainer.innerText = `It is Day ${n+1}.` ;
     updatestatus();
 
     // show the role
@@ -663,7 +662,7 @@ const array2 = [
     const wordContainer = document.querySelector('.word');
     wordContainer.innerText = "What do you want the Scientist to do? ";
 
-    if (scientist>0){
+    if (ScientistOut ==0 && scientist>0){
       // Generate the choice buttons
       const lettersContainer = document.querySelector('.letters');
       const buttonSc1 = document.createElement('button');
@@ -712,8 +711,16 @@ const array2 = [
         });
         lettersContainer.appendChild(button);
       }
-    } else {
-      WinOrLose();
+    } else{
+      const wordContainer = document.querySelector('.word');
+      wordContainer.innerText = "Scientist not available";
+      const lettersContainer = document.querySelector('.letters');
+      const button = document.createElement('button');
+      button.innerText = "Next personnel";
+      button.addEventListener('click', function () {
+      Displayrobots();
+      });
+      lettersContainer.appendChild(button);
     }
 }
 
@@ -866,6 +873,16 @@ function whoskipped(){
               });
               lettersContainer.appendChild(buttonP4);
             }
+
+            if(ScientistOut==0 && ScientistFirstTime){
+              const lettersContainer = document.querySelector('.letters');
+              const buttonP5 = document.createElement('button');
+              buttonP5.innerText = `Scienist. Existing Hunger Tokens = ${Scientisthungertoken}`;
+              buttonP5.addEventListener('click', function () {
+              Scientisthungertoken += 1;hungertokensthisround += 1;ScientistFirstTime=false;ResolveHunger();
+              });
+              lettersContainer.appendChild(buttonP5);
+            }
         }else {
           // if hungry people are fed with hunger tokens.. then check if anyone died from too many hunger tokens.
           food = 0;
@@ -893,8 +910,12 @@ function whoskipped(){
             const wordContainer = document.querySelector('.word');
             wordContainer.innerText += "\n Farmer removed from game due to overdose."
           }
-          const messageContainer = document.querySelector('.message');
-          messageContainer.innerText = `It is Day ${n+1}. \n ${personnel + scientist} food has been deducted` ;
+          if (scientist > 0 && Scientisthungertoken == hungertokenlimit){
+            scientist -=1;
+            const wordContainer = document.querySelector('.word');
+            wordContainer.innerText += "\n Scientist removed from game due to overdose."
+            checkWinOrLose();
+          }
           DisplaySoldier();
         }
   }
@@ -1034,7 +1055,7 @@ function whoskipped(){
     
     Resources: You have ${ammo} ammo,${timber} timber,${food} food,${herb} herb, ${specimens} specimens, ${tech} tech.
     
-    Hungertokens - Soldier:${Soldierhungertoken}, Botanist:${Botanisthungertoken}, Lumbersmith:${Lumbersmithhungertoken}, Farmer:${Farmerhungertoken}. Max per character:${hungertokenlimit-1} 
+    Hungertokens - Soldier:${Soldierhungertoken}, Botanist:${Botanisthungertoken}, Lumbersmith:${Lumbersmithhungertoken}, Farmer:${Farmerhungertoken}, Scientist:${Scientisthungertoken}. Max per character:${hungertokenlimit-1} 
     
     Robots - Normal Robots:${robots}, Assistant Robots: ${RobotAsst}`;
   }
