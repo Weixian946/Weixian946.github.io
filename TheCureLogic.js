@@ -105,7 +105,7 @@ const array2 = [
   const array = array1.concat(array2).concat(Horde1).concat(array3).concat(array4).concat(Horde2)
 
   let totalnights = array.length // 
-  const target = 30; // no. of specimens to be processed
+  const target = 35; // no. of specimens to be processed
 
   //const CrisesList = `Total of ${totalnights} nights = ${array1.length} easier Nights (max 2ammo/1herb/1timber/1tech/combos),then 1 MegaHorde,then ${array2.length} harder nights(max 2ammo/1herb/2timber/1tech/combos), then 1 Ultra Horde. \n Hordes 1/2 need 2/3 ammo, 1/2 herbs, 1/2 timbers but gain 2/3 specimens upon success. \n Failure to pass Horde Wave = Game Over.`;
 
